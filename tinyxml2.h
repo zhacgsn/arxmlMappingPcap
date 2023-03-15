@@ -1835,7 +1835,7 @@ public:
     virtual bool AcceptTree(const XMLElement* element, char targetElement[]) const;
     // virtual bool generateMap(const XMLElement* element) const;
     // virtual bool generateMap2(const XMLElement* element) const;
-    virtual bool generateMap3(const XMLElement* element) const;
+    virtual bool generateMap(const XMLElement* element) const;
     virtual bool decideClassType(const char str[]) const;
 
     /**

@@ -919,7 +919,7 @@ const std::string kPdu_tagname = "I-SIGNAL-I-PDU";
 const std::string kSignal_to_pdu_map_tagname = "I-SIGNAL-TO-I-PDU-MAPPING";
 const std::string kSignal_ref_tagname = "I-SIGNAL-REF";
 const std::string kName_tagname = "SHORT-NAME";
-const std::string kSignal_index_tagname = "START-POSITION";
+const std::string kSignal_offset_tagname = "START-POSITION";
 const std::string kLast_tagname = "UNUSED-BIT-PATTERN";
 const std::string kSignal_tagname = "I-SIGNAL";
 const std::string kSignal_length_tagname = "LENGTH";
@@ -934,19 +934,19 @@ std::map<std::string, std::vector<signal_pair>> signal_to_pdu_map;
 std::map<std::string, int> signal_to_length_map;
 
 // 深度优先
-bool XMLDocument::generateMap3(const XMLElement* element) const
+bool XMLDocument::generateMap(const XMLElement* element) const
 {
     std::stack<const XMLElement*> elementStack;
     const XMLElement* tempElement = element;
-    // 记录层级
+    // 记录当前遍历层级
     int count = -1;
     int pdu_count = INT_MAX;
     int pdu_name_count = INT_MAX;
     int pdu_id_count = INT_MAX;
     int signal_count = INT_MAX;
-    // 标识是否已确定 signal名和index
+    // 标识是否已确定 signal名和offset
     bool signal_set = false;
-    bool index_set = false;
+    bool offset_set = false;
 
     int pdu_id;
     std::string pdu_ref_name;
@@ -955,10 +955,10 @@ bool XMLDocument::generateMap3(const XMLElement* element) const
     std::string real_signal_name;
     std::string real_signal_name2;
     std::string father_name = "";
-    int signal_index;
+    int signal_offset;
     int signal_lenth = 0;
 
-    std::vector<signal_pair> signal_index_pair;
+    std::vector<signal_pair> signal_offset_pair;
 
     while (tempElement != NULL || !elementStack.empty())
     {
@@ -1016,28 +1016,28 @@ bool XMLDocument::generateMap3(const XMLElement* element) const
                 // std::cout << tempElement->Name();
             }
             // signal偏移量
-            if (count > pdu_count && tempElement->Name() == kSignal_index_tagname)
+            if (count > pdu_count && tempElement->Name() == kSignal_offset_tagname)
             {
                 // std::cout << tempElement->GetText() << std::endl;
-                signal_index = atoi(tempElement->GetText());
-                index_set = true;
+                signal_offset = atoi(tempElement->GetText());
+                offset_set = true;
             }
             // 某 pdu内某 signal的名字和偏移量均已确定
-            if (count > pdu_count && signal_set && index_set)
+            if (count > pdu_count && signal_set && offset_set)
             {
                 // std::cout << "pdu: " << pdu_name << " has signal: " << real_signal_name << ", " << signal_index << std::endl;
                 // signal index vector
-                signal_index_pair.push_back(std::make_pair(real_signal_name, signal_index));
+                signal_offset_pair.push_back(std::make_pair(real_signal_name, signal_offset));
                 signal_set = false;
-                index_set = false;
+                offset_set = false;
             }
             // 当前 pdu内 signal名字与偏移量已加入 vector
             if (count > pdu_count && tempElement->Name() == kLast_tagname)
             {
                 // vector加入 map
-                signal_to_pdu_map.emplace(pdu_name, signal_index_pair);
+                signal_to_pdu_map.emplace(pdu_name, signal_offset_pair);
                 // 清空 vector，用于存放下一个 pdu的signal
-                signal_index_pair.clear();
+                signal_offset_pair.clear();
             }
             if (tempElement->Name() == kSignal_tagname)
             {
@@ -1069,6 +1069,7 @@ bool XMLDocument::generateMap3(const XMLElement* element) const
     return true;
 }
 
+// 打印 std::map<int, std::string> id_to_pdu_map
 void PrintIdToPduMap()
 {
     for (auto &it : id_to_pdu_map)
@@ -1077,6 +1078,7 @@ void PrintIdToPduMap()
     }
 }
 
+// 打印 std::map<std::string, std::vector<signal_pair>> signal_to_pdu_map
 void PrintSignalToPduMap()
 {
     for (auto &it : signal_to_pdu_map)
@@ -1085,11 +1087,12 @@ void PrintSignalToPduMap()
 
         for (auto &signal_it : it.second)
         {
-            std::cout << "\t" << signal_it.first << " at index " << signal_it.second << std::endl;
+            std::cout << "\t" << signal_it.first << " at offset " << signal_it.second << std::endl;
         }
     }
 }
 
+// 打印 std::map<std::string, int> signal_to_length_map
 void PrintSignalToLengthMap()
 {
     for (auto &it : signal_to_length_map)

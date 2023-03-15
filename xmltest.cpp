@@ -120,7 +120,7 @@ int main()
     {
 		XMLElement* rootElement = doc.FirstChildElement();
 		// doc.Print();
-		doc.generateMap3(rootElement);
+		doc.generateMap(rootElement);
 		PrintIdToPduMap();
 		std::cout << endl;
 		PrintSignalToPduMap();
