@@ -1,0 +1,131 @@
+AR-PACKAGES
+    AR-PACKAGE: Communication
+        AR-PACKAGES
+            AR-PACKAGE DATATransformation
+            AR-PACKAGE PDUs
+                I-SIGNAL-I-PDU
+                I-SIGNAL-I-PDU-GROUP
+                I-SIGNAL-I-PDU
+            AR-PACKAGE SIGNALs
+                I-SIGNAL
+            AR-PACKAGE SystemSignals
+                SYSTEM-SIGNAL
+    AR-PACKAGE DataTypeMappingSets
+        ElEMENTS
+            DATA-TYPE-MAPPING-SET ADAS_CP_Data_Type_Mappings
+                DATA-TYPE-MAPS
+                    DATA-TYPE-MAP
+            DATA-TYPE-MAPPING_SET ADAS_CP_Data_Type_Mappings_New
+                DATA-TYPE-MAPS
+                    DATA-TYPE-MAP
+    AR-PACKAGE DataTypes
+        AR-PACKAGES
+            AR-PACKAGE ApplicationDataTypes
+                ELEMENTS
+                    APPLICATION-ARRAY-DATA-TYPE
+                    APPLICATION-PRIMITIVE-DATA-TYPE
+                    APPLICATION-RECORD-DATA-TYPE
+            AR-PACKAGE BaseTypes
+                ELEMENTS
+                    SW-BASE-TYPE
+            AR-PACKAGE CompuMethods
+                ELEMENTS
+                    COMPU-METHOD
+            AR-PACKAGE ImplementationDataTypes
+                ELEMENTS
+                    IMPLEMENTATION-DATA-TYPE
+            AR-PACKAGE Units
+                ELEMENTS
+                    UNIT
+    AR-PACKAGE: SoAdRoutingGroups
+        ELEMENTS
+            SO-AD-ROUTING-GROUP[]
+                EVENT-GROUP-CONTROL-TYPE
+    AR-PACKAGE: SoftwareTypes
+        AR-PACKAGES
+            AR-PACKAGE: ComponentTypes
+                ELEMENTS
+                    APPLICATION-SW-COMPONENT-TYPE[]
+                        PORTS
+                            P-PORT-PROTOTYPE[]
+                        INTERNAL-BEHAVIORS
+                            SWC-INTERNAL-BEHAVIOR
+                    COMPOSITION-SW-COMPONENT-TYPE[]
+                        PORTS
+                            R-PORT-PROTOTYPE[]
+                        COMPONENTS
+                            SW-COMPONENT-PROTOTYPE[]
+                        CONNECTORS
+                            ASSEMBLY-SW-CONNECTOR[]
+                                PROVIDER-IREF
+                                REQUESTER-IREF
+                            DELEGATION-SW-CONNECTOR
+            AR-PACKAGE: Interfaces
+                ELEMENTS
+                    CLIENT-SERVER-INTERFACE[]
+                        IS-SERVICE
+                        OPERATIONS
+                            CLIENT-SERVER-OPERATION
+                                ARGUMENTS
+                    SENDER-RECEIVER-INTERFACE[]
+                        IS-SERVICE
+                        DATA-ELEMENTS
+                            VARIABLE-DATA-PROTOTYPE
+                                SW-DATA-DEF-PROPS
+                                TYPE-TREF
+            AR-PACKAGE: SwcImplementations
+                ELEMENTS
+                    SWC-IMPLEMENTATION[]
+                        CODE-DESCRIPTORS
+                            CODE
+                                ARTIFACT-DESCRIPTORS
+                                    AUTOSAR-ENGINEERING-OBJECT[]
+                        PROGRAMMING-LANGUAGE
+                        SW-VERSION
+                        USED-CODE-GENERATOR
+                        VENDOR-ID
+                        BEHAVIOR-REF
+    AR-PACKAGE: System
+        ELEMENTS
+            SYSTEM: System
+                CATEGORY: SYSTEM_DESCRIPTION
+                FIBEX-ELEMENTS
+                    FIBEX-ELEMENT-REF-CONDITIONAL[]
+                        FIBEX-ELEMENT-REF
+                MAPPINGS
+                    SYSTEM-MAPPING: Mapping
+                        DATA-MAPPINGS
+                            SENDER-RECEIVER-TO-SIGNAL-MAPPING[]
+                                DATA-ELEMENT-IREF
+                                    CONTEXT-COMPONENT-REF[]
+                                    CONTEXT-COMPOSITION-REF
+                                    CONTEXT-PORT-REF
+                                    TARGET-DATA-PROTOTYPE-REF
+                                SYSTEM-SIGNAL-REF
+                        SW-MAPPINGS
+                            SWC-TO-ECU-MAPPING[]
+                                COMPONENT-IREFS
+                                    COMPONENT-IREF
+                                        CONTEXT-COMPOSITION-REF
+                                        CONTEXT-COMPONENT-REF[]
+                                        TARGET-COMPONENT-REF
+                                ECU-INSTANCE-REF
+                ROOT-SOFTWARE-COMPOSITIONS
+                    ROOT-SW-COMPOSITION-PROTOTYPE: FEEA30
+                        SOFTWARE-COMPOSITION-TREF: /SoftwareTypes/ComponentTypes/FEEA30
+    AR-PACKAGE Topology
+        AR-PACKAGES
+            AR-PACKAGE  Clusters
+                ELEMENTS
+                    ETHERNET-CLUSTER EthernetCluster
+                        ETHERNET-CLUSTER-VARIANTS
+                            ETHERNET-CLUSTER-CONDITIONAL
+                            COUPLING-PORT-CONNECTIONS
+                            MAC-MULTICAST-GROUPS
+            AR-PACKAGE HardwareComponents
+                ELEMENTS
+                    COUPLING-ELEMENT Switch
+                    ECU-INSTANCE HAD...    
+
+
+                    
