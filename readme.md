@@ -10,7 +10,7 @@ make
 
 部分文件说明
 ----------
-tinyxml2.h, tinyxml2.cpp: XML解析所需定义与实现，其中XMLDocument在tinyxml基础上增添了遍历函数AcceptTree()和generateMap3()，后者用于对给定文件Network.arxml生成其内PDU和Signal之间的映射结构。tinuxml2.cpp中定义了数据结构
+tinyxml2.h, tinyxml2.cpp: XML解析所需定义与实现，其中XMLDocument在tinyxml基础上增添了遍历函数```AcceptTree()```和```GenerateMap()```，后者用于对给定文件Network.arxml生成其内PDU和Signal之间的映射结构。tinuxml2.cpp中定义了数据结构
 
 
 ```std::unordered_map<int, std::string> id_to_pdu_map```: HEADER-ID与PDU名之间的映射

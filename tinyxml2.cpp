@@ -955,7 +955,7 @@ std::unordered_map<pdu_signal_pair, int, HashPair> signal_index_in_pdu_map;
 std::unordered_map<std::string, int> signal_to_length_map;
 
 // 深度优先
-bool XMLDocument::generateMap(const XMLElement* element) const
+bool XMLDocument::GenerateMap(const XMLElement* element) const
 {
     std::stack<const XMLElement*> elementStack;
     const XMLElement* tempElement = element;
