@@ -34,6 +34,7 @@ distribution.
 #endif
 
 #include <map>
+#include <unordered_map>
 #include <utility>
 #include <set>
 #include <queue>
@@ -924,14 +925,34 @@ const std::string kLast_tagname = "UNUSED-BIT-PATTERN";
 const std::string kSignal_tagname = "I-SIGNAL";
 const std::string kSignal_length_tagname = "LENGTH";
 
-using signal_pair = std::pair<std::string, int>;
+using signal_offset_pair = std::pair<std::string, int>;
+using pdu_signal_pair = std::pair<std::string, std::string>;
 
-// HEADER-ID, pdu名
-std::map<int, std::string> id_to_pdu_map;
-// pdu名, (signal名，signal偏移量)
-std::map<std::string, std::vector<signal_pair>> signal_to_pdu_map;
-// signal名, length
-std::map<std::string, int> signal_to_length_map;
+// 定义 unordered_map键的哈希函数
+struct HashPair
+{
+    template <class T1, class T2>
+    size_t operator() (const std::pair<T1, T2>& p) const
+    {
+        auto hash1 = std::hash<T1>{} (p.first);
+        auto hash2 = std::hash<T2>{} (p.second);
+
+        if (hash1 != hash2)
+        {
+            return hash1 ^ hash2;
+        }
+        return hash1;
+    }
+};
+
+// 根据 HEADER-ID取 pdu名
+std::unordered_map<int, std::string> id_to_pdu_map;
+// 根据 pdu名取 (signal名，signal偏移量)数组
+std::map<std::string, std::vector<signal_offset_pair>> signal_to_pdu_map;
+// 根据 (pdu名, signal名)取 signal编号
+std::unordered_map<pdu_signal_pair, int, HashPair> signal_index_in_pdu_map;
+// 根据 signal名取 length
+std::unordered_map<std::string, int> signal_to_length_map;
 
 // 深度优先
 bool XMLDocument::generateMap(const XMLElement* element) const
@@ -957,8 +978,9 @@ bool XMLDocument::generateMap(const XMLElement* element) const
     std::string father_name = "";
     int signal_offset;
     int signal_lenth = 0;
+    int signal_in_pdu_count = 0;
 
-    std::vector<signal_pair> signal_offset_pair;
+    std::vector<signal_offset_pair> signal_offset_pair_vec;
 
     while (tempElement != NULL || !elementStack.empty())
     {
@@ -987,12 +1009,14 @@ bool XMLDocument::generateMap(const XMLElement* element) const
                 // std::cout << tempElement->Name();
                 pdu_count = count;
                 pdu_name_count = pdu_count + 1;
+                // 进入新 pdu，signal重新计数
             }
-            // pdu SHORT-NAME
+            // pdu SHORT-NAME, 不只是 I-PDU这一种 PDU!
             if (count == pdu_name_count && tempElement->Name() == kName_tagname)
             {
                 // std::cout << "pdu名: " << tempElement->GetText() << std::endl;
                 pdu_name = tempElement->GetText();
+                signal_in_pdu_count = 1;
             }
             // signal SHORT-NAME (IDxx)
             if (count > pdu_name_count && tempElement->Name() == kName_tagname)
@@ -1025,9 +1049,13 @@ bool XMLDocument::generateMap(const XMLElement* element) const
             // 某 pdu内某 signal的名字和偏移量均已确定
             if (count > pdu_count && signal_set && offset_set)
             {
-                // std::cout << "pdu: " << pdu_name << " has signal: " << real_signal_name << ", " << signal_index << std::endl;
+                // std::cout << "pdu: " << pdu_name << " has signal: " << real_signal_name << "at " << signal_offset << std::endl;
                 // signal index vector
-                signal_offset_pair.push_back(std::make_pair(real_signal_name, signal_offset));
+                signal_offset_pair_vec.push_back(std::make_pair(real_signal_name, signal_offset));
+                // std::cout << "In PDU " << pdu_name << ", signal " << real_signal_name << " is at number " << signal_in_pdu_count << std::endl;
+                signal_index_in_pdu_map.emplace(std::make_pair(pdu_name, real_signal_name), signal_in_pdu_count);
+                signal_in_pdu_count++;
+
                 signal_set = false;
                 offset_set = false;
             }
@@ -1035,9 +1063,9 @@ bool XMLDocument::generateMap(const XMLElement* element) const
             if (count > pdu_count && tempElement->Name() == kLast_tagname)
             {
                 // vector加入 map
-                signal_to_pdu_map.emplace(pdu_name, signal_offset_pair);
+                signal_to_pdu_map.emplace(pdu_name, signal_offset_pair_vec);
                 // 清空 vector，用于存放下一个 pdu的signal
-                signal_offset_pair.clear();
+                signal_offset_pair_vec.clear();
             }
             if (tempElement->Name() == kSignal_tagname)
             {
@@ -1092,12 +1120,21 @@ void PrintSignalToPduMap()
     }
 }
 
+// 打印 std::unordered_map<pdu_signal_pair, int, HashPair> signal_index_in_pdu_map;
+void PrintSignalIndexInPduMap()
+{
+    for (auto &it : signal_index_in_pdu_map)
+    {
+        std::cout << "In PDU " << it.first.first << ", signal " << it.first.second << " is at number " << it.second << std::endl;
+    }
+}
+
 // 打印 std::map<std::string, int> signal_to_length_map
 void PrintSignalToLengthMap()
 {
     for (auto &it : signal_to_length_map)
     {
-        std::cout << "signal " << it.first << " has length: " << it.second << std::endl;
+        std::cout << "Signal " << it.first << " has length: " << it.second << std::endl;
     }
 }
 

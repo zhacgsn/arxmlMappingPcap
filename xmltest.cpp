@@ -126,6 +126,8 @@ int main()
 		PrintSignalToPduMap();
 		std::cout << endl;
 		PrintSignalToLengthMap();
+		std::cout << endl;
+		PrintSignalIndexInPduMap();
 	}
     return 0;
 }
