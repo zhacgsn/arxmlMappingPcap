@@ -23,3 +23,5 @@ xmltest
 vs/debug
 FEEA30.arxml
 out.txt
+.DS_Store
+test.txt

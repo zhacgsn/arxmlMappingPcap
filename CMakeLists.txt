@@ -19,7 +19,7 @@ endif ()
 set(CMAKE_CXX_VISIBILITY_PRESET hidden)
 set(CMAKE_VISIBILITY_INLINES_HIDDEN YES)
 
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 
 add_library(tinyxml2 tinyxml2.cpp tinyxml2.h)
 add_library(tinyxml2::tinyxml2 ALIAS tinyxml2)

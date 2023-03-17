@@ -192,7 +192,6 @@ CMakeFiles/xmltest.dir/xmltest.cpp.o: xmltest.cpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/stdexcept \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__memory/unique_ptr.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__functional/hash.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__memory/auto_ptr.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/atomic \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__thread/poll_with_backoff.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/chrono \
@@ -439,8 +438,31 @@ CMakeFiles/xmltest.dir/xmltest.cpp.o: xmltest.cpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/stack \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/stat.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_s_ifmt.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_filesec_t.h
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_filesec_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/arpa/inet.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/netinet/in.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/socket.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/constrained_ctypes.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/machine/_param.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/arm/_param.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/net/net_kev.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_sa_family_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_socklen_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_iovec_t.h \
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/netinet6/in6.h
 
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/netinet6/in6.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_sa_family_t.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/net/net_kev.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/arm/_param.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/machine/_param.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/constrained_ctypes.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_filesec_t.h:
 
@@ -491,8 +513,6 @@ tinyxml2.cpp:
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_ino_t.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_in_addr_t.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_gid_t.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_blksize_t.h:
 
@@ -588,6 +608,8 @@ tinyxml2.cpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__algorithm/stable_sort.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_socklen_t.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/arm/signal.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__algorithm/partition_copy.h:
@@ -616,6 +638,8 @@ tinyxml2.cpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__algorithm/max_element.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_iovec_t.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__algorithm/sift_down.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/wctype.h:
@@ -637,8 +661,6 @@ tinyxml2.cpp:
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/cctype:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__algorithm/rotate.h:
-
-/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__memory/auto_ptr.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__algorithm/min_element.h:
 
@@ -710,6 +732,8 @@ tinyxml2.cpp:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__algorithm/for_each_n.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/netinet/in.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__iterator/ostream_iterator.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/string.h:
@@ -763,6 +787,8 @@ tinyxml2.cpp:
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/iterator:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__algorithm/remove.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/socket.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__algorithm/copy_if.h:
 
@@ -970,6 +996,8 @@ tinyxml2.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_timespec.h:
 
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_gid_t.h:
+
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/time.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/cstdlib:
@@ -1173,6 +1201,8 @@ tinyxml2.h:
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__memory/unique_ptr.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__random/uniform_int_distribution.h:
+
+/Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/arpa/inet.h:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/c++/v1/__algorithm/is_partitioned.h:
 
