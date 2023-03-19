@@ -449,8 +449,14 @@ CMakeFiles/xmltest.dir/xmltest.cpp.o: xmltest.cpp \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_sa_family_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_socklen_t.h \
   /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_iovec_t.h \
-  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/netinet6/in6.h
+  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/netinet6/in6.h \
+  PDUBuffer.cc \
+  PDUBuffer.h
 
+
+PDUBuffer.h:
+
+PDUBuffer.cc:
 
 /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/netinet6/in6.h:
 

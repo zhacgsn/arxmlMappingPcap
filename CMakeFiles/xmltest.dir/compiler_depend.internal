@@ -451,4 +451,6 @@ CMakeFiles/xmltest.dir/xmltest.cpp.o
  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_socklen_t.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/sys/_types/_iovec_t.h
  /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk/usr/include/netinet6/in6.h
+ /Users/zhacgsn/VSProjects/tinyxml2/PDUBuffer.cc
+ /Users/zhacgsn/VSProjects/tinyxml2/PDUBuffer.h
 

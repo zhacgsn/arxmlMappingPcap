@@ -111,14 +111,14 @@ void NullLineEndings( char* p )
 		++p;
 	}
 }
-
 #include <iostream>
 #include <stdio.h>
 #include <vector>
 #include <string>
-#include <map>
 #include <arpa/inet.h>
 #include <math.h>
+#include "PDUBuffer.cc"
+
 /*pcap file header*/
 typedef struct PcapFileHeader
 {
@@ -144,16 +144,16 @@ typedef struct PcapPkthdr
 const int LEN_GLOBAL_PCAP_HEADER = 24;
 const int LEN_PCAP_HEADER = 16;
 const int LEN_UDP_HEADER = 46;
-std::string file_name("./VGW_PDU_Packets.pcap");
-// pdu编号 pdu名 signal地址
-std::vector<std::pair<int, std::map<std::string, std::vector<char*>>>> pcap_data;
+std::string file_name("./VGW_PDU_Packets.pcap"); 
 
-std::vector<std::string> char_vec;
+// std::vector<std::pair<int, std::map<std::string, std::vector<char*>>>> pcap_data;
+// 需要保存siganal的索引位置，因为buffer扩容后地址可能发生变化
+std::vector<std::pair<int, std::map<std::string, std::vector<int>>>> pcap_data;
+PDUBuffer buffer;
 
 void get_pcap_data()
 {
 	int count = 0;
-
     FILE *fp = fopen(file_name.c_str(), "rb");
     if (fp==NULL) 
     {
@@ -163,7 +163,6 @@ void get_pcap_data()
     PcapPkthdr_t packetHeader = {0};
     fread(&packetHeader, sizeof(PcapFileHeader_t), 1, fp);
     // 每个udp最后包含的pdu是一个完整的pdu
-
     while (!feof(fp))
     {
         fread(&packetHeader, sizeof(PcapPkthdr_t), 1, fp);
@@ -181,38 +180,34 @@ void get_pcap_data()
             //uint32_t *net_id = ((uint32_t *)p_net_id);
             uint32_t id = htonl(net_id);
             len -= sizeof(uint32_t);
-            // std::cout << "id: " << id << " len: " << len << std::endl;
+            std::cout << "id: " << id << " len: " << len << std::endl;
+            
             uint32_t net_pdu_len;
             fread(&net_pdu_len, sizeof(uint32_t), 1, fp);
             uint32_t pdu_len = htonl(net_pdu_len);
             len -= sizeof(uint32_t);
-            // std::cout << "pdu_len: " << pdu_len << " len: "<< len << std::endl;
+            std::cout << "pdu_len: " << pdu_len << " len: "<< len << std::endl;
 
             // 读入内存
-            char *buf;
-			buf = (char *)malloc(pdu_len);
-            fread(buf, 1, pdu_len, fp);
-			char_vec.push_back(buf);
-			// std::cout << "buf len: " << strlen(buf) << std::endl;
-
+            // char *buf = (char *)malloc(pdu_len);
+            // fread(buf, 1, pdu_len, fp);
+            // len -= pdu_len;
+            int start_write_index = buffer.get_write_index();
+            fread(buffer.get_next_write_address(pdu_len), 1, pdu_len, fp);
+            buffer.update_write_index(pdu_len);
             len -= pdu_len;
+
             // int *tmp = (int *)&buf[0];
             // std::cout << " value " << *tmp << std::endl;
             std::string name = id_to_pdu_map[id];
             std::vector<signal_offset_pair> sigs = signal_to_pdu_map[name];
-            std::map<std::string, std::vector<char*>> mp;
+            // std::map<std::string, std::vector<char*>> mp;
+            std::map<std::string, std::vector<int>> mp;
             for (auto sig : sigs)
             {
-                uint64_t start_offset = sig.second;
-
-				if (count < 4)
-				{
-					std::cout << "start_offset: " << start_offset << std::endl;
-					printf("buf %p\n", buf);
-					printf("buf[start_offset] %p\n", &buf[start_offset]);
-				}
-                mp[name].push_back(&buf[start_offset]);
-				
+                uint64_t start_index = sig.second;
+                // mp[name].push_back(&buf[start_index]);
+                mp[name].push_back(start_write_index * 8 + start_index);
             }
             pcap_data.push_back(std::make_pair(count, mp));
             count++;
@@ -227,15 +222,14 @@ void print_pcap_data()
         std::cout << "The number is " << v.first;
         for (auto [m_k, m_v] : v.second)
         {
-            std::cout << "The PDU is " << m_k << " The address is ";
+            std::cout << " The PDU is " << m_k << " The index is ";
             for (auto v_v : m_v)
             {
-                printf("%p\t", v_v);
+                std::cout << v_v << "  ";
             }
         }
         std::cout << std::endl;
     }
-    
 }
 
 int main()
@@ -256,7 +250,7 @@ int main()
 		PrintSignalIndexInPduMap();
 		std::cout << std::endl;
 		get_pcap_data();
-    	print_pcap_data();
+		print_pcap_data();
 	}
     return 0;
 }
