@@ -17,10 +17,12 @@ public:
     }
 
     void ensure_writable_bytes(size_t len);
+    char* get_head_address();
 
 private:
     void make_space(size_t len);
     char* buffer_;
     size_t size_;
     size_t writeIndex_;
+
 };

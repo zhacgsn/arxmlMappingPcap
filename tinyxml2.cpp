@@ -949,7 +949,7 @@ struct HashPair
 std::unordered_map<int, std::string> id_to_pdu_map;
 // 根据 pdu名取 (signal名，signal偏移量)数组
 std::map<std::string, std::vector<signal_offset_pair>> signal_to_pdu_map;
-// 根据 (pdu名, signal名)取 signal编号
+// 根据 (pdu名, signal名)取 signal编号，从 1开始
 std::unordered_map<pdu_signal_pair, int, HashPair> signal_index_in_pdu_map;
 // 根据 signal名取 length
 std::unordered_map<std::string, int> signal_to_length_map;
@@ -1016,7 +1016,7 @@ bool XMLDocument::GenerateMap(const XMLElement* element) const
             {
                 // std::cout << "pdu名: " << tempElement->GetText() << std::endl;
                 pdu_name = tempElement->GetText();
-                signal_in_pdu_count = 1;
+                signal_in_pdu_count = 0;
             }
             // signal SHORT-NAME (IDxx)
             if (count > pdu_name_count && tempElement->Name() == kName_tagname)

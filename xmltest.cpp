@@ -144,21 +144,24 @@ typedef struct PcapPkthdr
 const int LEN_GLOBAL_PCAP_HEADER = 24;
 const int LEN_PCAP_HEADER = 16;
 const int LEN_UDP_HEADER = 46;
-std::string file_name("./VGW_PDU_Packets.pcap"); 
+std::string file_name("./VGW_PDU_Packets.pcap");
 
+// int为 在buffer中的起始位置
+using pdu_pair = std::pair<std::string, int>;
 // std::vector<std::pair<int, std::map<std::string, std::vector<char*>>>> pcap_data;
-// 需要保存siganal的索引位置，因为buffer扩容后地址可能发生变化
-std::vector<std::pair<int, std::map<std::string, std::vector<int>>>> pcap_data;
+// 需要保存siganal的索引位置，因为buffer扩容后地址可能发生变化，int 为偏移量
+std::vector<std::pair<int, std::map<std::string, int>>> pcap_data;
 PDUBuffer buffer;
 
 void get_pcap_data()
-{
-	int count = 0;
+{ 
+    int count = 0;
+
     FILE *fp = fopen(file_name.c_str(), "rb");
     if (fp==NULL) 
     {
-		printf("open file error... \n");
-	}
+        printf("open file error... \n");
+    }
     PcapFileHeader_t pcapFileHeader = {0};
     PcapPkthdr_t packetHeader = {0};
     fread(&packetHeader, sizeof(PcapFileHeader_t), 1, fp);
@@ -197,39 +200,114 @@ void get_pcap_data()
             buffer.update_write_index(pdu_len);
             len -= pdu_len;
 
-            // int *tmp = (int *)&buf[0];
-            // std::cout << " value " << *tmp << std::endl;
             std::string name = id_to_pdu_map[id];
-            std::vector<signal_offset_pair> sigs = signal_to_pdu_map[name];
-            // std::map<std::string, std::vector<char*>> mp;
-            std::map<std::string, std::vector<int>> mp;
-            for (auto sig : sigs)
-            {
-                uint64_t start_index = sig.second;
-                // mp[name].push_back(&buf[start_index]);
-                mp[name].push_back(start_write_index * 8 + start_index);
-            }
+            std::map<std::string, int> mp;
+            mp[name] = start_write_index;
             pcap_data.push_back(std::make_pair(count, mp));
+            
+            // // int *tmp = (int *)&buf[0];
+            // // std::cout << " value " << *tmp << std::endl;
+            // std::string name = id_to_pdu_map[id];
+            // std::vector<signal_pair> sigs = signal_to_pdu_map[name];
+            // // std::map<std::string, std::vector<char*>> mp;
+            // std::map<pdu_pair, std::vector<int>> mp;
+            // pdu_pair tmp_pdu_pair(name, start_write_index);
+            // for (auto sig : sigs)
+            // {
+            //     uint64_t start_index = sig.second;
+            //     // mp[name].push_back(&buf[start_index]);
+            //     mp[tmp_pdu_pair].push_back(start_index);
+            // }
+            // pcap_data.push_back(std::make_pair(count, mp));
             count++;
         }
     }
 }
 
-void print_pcap_data()
+// void print_pcap_data()
+// {
+//     for (auto v : pcap_data)
+//     {
+//         std::cout << "The number is " << v.first;
+//         for (auto [m_k, m_v] : v.second)
+//         {
+//             std::cout << " The PDU is " << m_k << " The index is ";
+//             for (auto v_v : m_v)
+//             {
+//                 std::cout << v_v << "  ";
+//             }
+//         }
+//         std::cout << std::endl;
+//     }
+// }
+
+// void print_pcap_data()
+// {
+//     for (auto v : pcap_data)
+//     {
+//         std::cout << "The number is " << v.first;
+//         for (auto [m_k, m_v] : v.second)
+//         {
+//             std::cout << " The PDU is " << m_k.first  << ", PDU offset(Byte): " << m_k.second << " The signal offset(Bit) and address are ";
+//             for (int i = 0; i < m_v.size(); ++i)
+//             {
+//                 std::cout << "\t" << m_v[i] << "  " << static_cast<void*>(buffer.get_start_address_by_index((int)m_v[i] / 8));
+//             }
+//         }
+//         std::cout << std::endl;
+//     }
+    
+// }
+
+char* get_signal_data(std::string pdu_name, std::string signal_name)
 {
+    // for (auto [key, value] : pcap_data)
+    // {
+    //     for (auto [k, v] : value)
+    //     {
+    //         if (k.first == pdu_name)
+    //         {
+    //             int start_index = k.second;
+    //             // 需进行非空判断
+    //             pdu_signal_pair tmp(pdu_name, signal_name);
+    //             int index = signal_index_in_pdu_map[tmp];
+    //             std::vector<signal_offset_pair>  tmp_vec = signal_to_pdu_map[pdu_name];
+    //             signal_offset_pair sig = tmp_vec[index];
+    //             int number = sig.second;
+    //             int siganl_offset = v[number];
+    //             return buffer.get_start_address_by_index(start_index + siganl_offset\8);
+    //         }
+    //     }
+    // }
+
     for (auto v : pcap_data)
     {
-        std::cout << "The number is " << v.first;
-        for (auto [m_k, m_v] : v.second)
+        if (v.second.count(pdu_name) == 0)
         {
-            std::cout << " The PDU is " << m_k << " The index is ";
-            for (auto v_v : m_v)
-            {
-                std::cout << v_v << "  ";
-            }
+            continue;
         }
-        std::cout << std::endl;
+        else
+        {
+            int start_index = v.second[pdu_name];
+            pdu_signal_pair tmp(pdu_name, signal_name);
+            int signal_index = signal_index_in_pdu_map[tmp];
+            std::vector<signal_offset_pair>  tmp_vec = signal_to_pdu_map[pdu_name];
+            signal_offset_pair sig = tmp_vec[signal_index];
+            int offset_bit = sig.second;
+            std::cout << "signal_index: " << signal_index << endl;
+            std::cout << "offset_bit: " << offset_bit << "  " << "start_index: " << start_index << endl;
+            return buffer.get_start_address_by_index(start_index + offset_bit / 8);
+
+        }
     }
+    return nullptr;
+}
+
+void test1()
+{
+    // 输入 pdu名字与signal名字
+    int *value = (int *)get_signal_data("VehicleSpeed", "VehicleSpeed");
+    std::cout << "the value is " << *index << std::endl;
 }
 
 int main()
@@ -250,7 +328,9 @@ int main()
 		PrintSignalIndexInPduMap();
 		std::cout << std::endl;
 		get_pcap_data();
-		print_pcap_data();
+		// print_pcap_data();
+
+        test1();
 	}
     return 0;
 }
