@@ -240,24 +240,26 @@ void get_pcap_data()
 //         std::cout << std::endl;
 //     }
 // }
+// std::vector<std::pair<int, std::map<std::string, int>>> pcap_data;
 
-// void print_pcap_data()
-// {
-//     for (auto v : pcap_data)
-//     {
-//         std::cout << "The number is " << v.first;
-//         for (auto [m_k, m_v] : v.second)
-//         {
-//             std::cout << " The PDU is " << m_k.first  << ", PDU offset(Byte): " << m_k.second << " The signal offset(Bit) and address are ";
-//             for (int i = 0; i < m_v.size(); ++i)
-//             {
-//                 std::cout << "\t" << m_v[i] << "  " << static_cast<void*>(buffer.get_start_address_by_index((int)m_v[i] / 8));
-//             }
-//         }
-//         std::cout << std::endl;
-//     }
+
+void print_pcap_data()
+{
+    for (auto v : pcap_data)
+    {
+        std::cout << "The number is " << v.first;
+        for (auto [m_k, m_v] : v.second)
+        {
+            std::cout << " The PDU is " << m_k  << ", PDU offset(Byte): " << m_v << std::endl;
+            // for (int i = 0; i < m_v.size(); ++i)
+            // {
+            //     std::cout << "\t" << m_v[i] << "  " << static_cast<void*>(buffer.get_start_address_by_index((int)m_v[i] / 8));
+            // }
+        }
+        std::cout << std::endl;
+    }
     
-// }
+}
 
 char* get_signal_data(std::string pdu_name, std::string signal_name)
 {
@@ -306,8 +308,8 @@ char* get_signal_data(std::string pdu_name, std::string signal_name)
 void test1()
 {
     // 输入 pdu名字与signal名字
-    int *value = (int *)get_signal_data("VehicleSpeed", "VehicleSpeed");
-    std::cout << "the value is " << *index << std::endl;
+    uint8_t *value = (uint8_t*)get_signal_data("VehicleSpeed", "VehicleDirection");
+    std::cout << "the value is " << int(*value) << std::endl;
 }
 
 int main()
@@ -328,7 +330,8 @@ int main()
 		PrintSignalIndexInPduMap();
 		std::cout << std::endl;
 		get_pcap_data();
-		// print_pcap_data();
+        std::cout << std::endl;
+		print_pcap_data();
 
         test1();
 	}

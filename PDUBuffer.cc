@@ -46,6 +46,7 @@ char* PDUBuffer::get_start_address_by_index(int start_index)
         printf("The start_index is wrong \n");
         return nullptr;
     }
+    // std::cout << "&buffer_[start_index]: " << static_cast<void*>(&buffer_[start_index]) << std::endl;
     return &buffer_[start_index];
 }
 
