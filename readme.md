@@ -2,7 +2,9 @@ arxmlMappingPcap
 =========
 如何运行
 ------
-cmake .
+cd build
+
+cmake ..
 
 make
 
