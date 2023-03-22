@@ -144,7 +144,7 @@ typedef struct PcapPkthdr
 const int LEN_GLOBAL_PCAP_HEADER = 24;
 const int LEN_PCAP_HEADER = 16;
 const int LEN_UDP_HEADER = 46;
-std::string file_name("./VGW_PDU_Packets.pcap");
+std::string file_name("/Users/zhacgsn/VSProjects/tinyxml2/VGW_PDU_Packets.pcap");
 
 // int为 在buffer中的起始位置
 using pdu_pair = std::pair<std::string, int>;
@@ -324,12 +324,12 @@ void test1()
 int main()
 {
     XMLDocument doc;
-    doc.LoadFile("Network.arxml");
+    doc.LoadFile("/Users/zhacgsn/VSProjects/tinyxml2/Network.arxml");
 
     {
-		XMLElement* rootElement = doc.FirstChildElement();
+		XMLElement* root_element = doc.FirstChildElement();
 		// doc.Print();
-		doc.GenerateMap(rootElement);
+		doc.GenerateMap(root_element);
 
         std::cout << "id_to_pdu_map: " << std::endl;
 		PrintIdToPduMap();
