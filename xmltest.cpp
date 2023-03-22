@@ -331,33 +331,33 @@ int main()
 		// doc.Print();
 		doc.GenerateMap(rootElement);
 
-        // std::cout << "id_to_pdu_map: " << std::endl;
-		// PrintIdToPduMap();
-		// std::cout << endl;
+        std::cout << "id_to_pdu_map: " << std::endl;
+		PrintIdToPduMap();
+		std::cout << endl;
 
-        // std::cout << "signal_to_pdu_map: " << std::endl;
-		// PrintSignalToPduMap();
+        std::cout << "signal_to_pdu_map: " << std::endl;
+		PrintSignalToPduMap();
 		std::cout << endl;
 
         std::cout << "signal_to_length_map: " << std::endl;
 		PrintSignalToLengthMap();
 		std::cout << endl;
 
-        // std::cout << "signal_index_in_pdu_map: " << std::endl;
-		// PrintSignalIndexInPduMap();
-		// std::cout << std::endl;
+        std::cout << "signal_index_in_pdu_map: " << std::endl;
+		PrintSignalIndexInPduMap();
+		std::cout << std::endl;
 
-        // std::cout << "signal_to_type_map: " << std::endl;
-        // PrintSignalToTypeMap();
-		// std::cout << std::endl;
+        std::cout << "signal_to_type_map: " << std::endl;
+        PrintSignalToTypeMap();
+		std::cout << std::endl;
 
-        // std::cout << "get_pcacp_data(): " << std::endl;
-		// get_pcap_data();
-        // std::cout << std::endl;
-		// print_pcap_data();
+        std::cout << "get_pcacp_data(): " << std::endl;
+		get_pcap_data();
+        std::cout << std::endl;
+		print_pcap_data();
 
-        // std::cout << "If using BaseTypes: " << std::endl;
-        // test1();
+        std::cout << "If using BaseTypes: " << std::endl;
+        test1();
 	}
     return 0;
 }

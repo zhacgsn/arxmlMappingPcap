@@ -916,12 +916,13 @@ bool XMLDocument::AcceptTree(const XMLElement* element, char targetElement[]) co
 // 定义各标签名常量
 const std::string kId_tagname = "HEADER-ID";
 const std::string kPdu_ref_tagname = "PDU-TRIGGERING-REF";
-const std::string kPdu_tagname = "I-SIGNAL-I-PDU";
+const std::string kPdu_tagname1 = "I-SIGNAL-I-PDU";
+const std::string kPdu_tagname2 = "NM-PDU";
 const std::string kSignal_to_pdu_map_tagname = "I-SIGNAL-TO-I-PDU-MAPPING";
 const std::string kSignal_ref_tagname = "I-SIGNAL-REF";
 const std::string kName_tagname = "SHORT-NAME";
 const std::string kSignal_offset_tagname = "START-POSITION";
-const std::string kLast_tagname = "UNUSED-BIT-PATTERN";
+const std::string kEnd_of_pdu_tagname = "UNUSED-BIT-PATTERN";
 const std::string kSignal_tagname = "I-SIGNAL";
 const std::string kSignal_length_tagname = "LENGTH";
 const std::string kSignal_data_type_tagname = "BASE-TYPE-REF";
@@ -980,18 +981,23 @@ bool XMLDocument::GenerateMap(const XMLElement* element) const
 {
     std::stack<const XMLElement*> elementStack;
     const XMLElement* tempElement = element;
+
     // 记录当前遍历层级
     int count = -1;
     int pdu_count = INT_MAX;
     int pdu_name_count = INT_MAX;
     int pdu_id_count = INT_MAX;
     int signal_count = INT_MAX;
-    // 标识是否已确定 signal名和offset
-    bool signal_set = false;
-    bool offset_set = false;
+
     // 标识是否位于 signal标签内部
     bool is_in_signal = false;
+    // 标识是否位于 pdu标签内部（I-SIGNAL-I-PDU和其他 PDU如 NM-PDU是并列关系）
+    bool is_in_pdu = false;
 
+    // 标识是否已确定 signal名和 offset
+    bool signal_set = false;
+    bool offset_set = false;
+    
     int pdu_id;
     std::string pdu_ref_name;
     std::string pdu_name;
@@ -1028,11 +1034,12 @@ bool XMLDocument::GenerateMap(const XMLElement* element) const
                 id_to_pdu_map.emplace(pdu_id, pdu_ref_name);
             }
             // 遍历到 pdu标签名，记录此时层级 count
-            if (tempElement->Name() == kPdu_tagname)
+            if (tempElement->Name() == kPdu_tagname1 || tempElement->Name() == kPdu_tagname2)
             {
                 // std::cout << tempElement->Name();
                 pdu_count = count;
                 pdu_name_count = pdu_count + 1;
+                is_in_pdu = true;
                 // 进入新 pdu，signal重新计数
             }
             // pdu SHORT-NAME, 不只是 I-PDU这一种 PDU!
@@ -1084,12 +1091,13 @@ bool XMLDocument::GenerateMap(const XMLElement* element) const
                 offset_set = false;
             }
             // 当前 pdu内 signal名字与偏移量已加入 vector
-            if (count > pdu_count && tempElement->Name() == kLast_tagname)
+            if (count > pdu_count && tempElement->Name() == kEnd_of_pdu_tagname)
             {
                 // vector加入 map
                 signal_to_pdu_map.emplace(pdu_name, signal_offset_pair_vec);
                 // 清空 vector，用于存放下一个 pdu的signal
                 signal_offset_pair_vec.clear();
+                is_in_pdu = false;
             }
             if (tempElement->Name() == kSignal_tagname)
             {
@@ -1131,7 +1139,7 @@ bool XMLDocument::GenerateMap(const XMLElement* element) const
                     BaseType type = BaseType::A_UINT32;
                     signal_to_type_map.emplace(real_signal_name2, type);
                 }
-                std::cout << "signal: " << real_signal_name2 << " data type: " << data_type_name << " enum BaseType: " << static_cast<int>(signal_to_type_map.at(real_signal_name2)) << std::endl;
+                // std::cout << "signal: " << real_signal_name2 << " data type: " << data_type_name << " enum BaseType: " << static_cast<int>(signal_to_type_map.at(real_signal_name2)) << std::endl;
                 is_in_signal = false;
             }
             elementStack.push(tempElement);
