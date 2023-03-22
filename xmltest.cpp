@@ -337,14 +337,18 @@ int main()
 
         // std::cout << "signal_to_pdu_map: " << std::endl;
 		// PrintSignalToPduMap();
-		// std::cout << endl;
+		std::cout << endl;
 
-        // std::cout << "signal_to_length_map: " << std::endl;
-		// PrintSignalToLengthMap();
-		// std::cout << endl;
+        std::cout << "signal_to_length_map: " << std::endl;
+		PrintSignalToLengthMap();
+		std::cout << endl;
 
         // std::cout << "signal_index_in_pdu_map: " << std::endl;
 		// PrintSignalIndexInPduMap();
+		// std::cout << std::endl;
+
+        // std::cout << "signal_to_type_map: " << std::endl;
+        // PrintSignalToTypeMap();
 		// std::cout << std::endl;
 
         // std::cout << "get_pcacp_data(): " << std::endl;

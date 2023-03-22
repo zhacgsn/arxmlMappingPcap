@@ -989,6 +989,8 @@ bool XMLDocument::GenerateMap(const XMLElement* element) const
     // 标识是否已确定 signal名和offset
     bool signal_set = false;
     bool offset_set = false;
+    // 标识是否位于 signal标签内部
+    bool is_in_signal = false;
 
     int pdu_id;
     std::string pdu_ref_name;
@@ -1092,6 +1094,7 @@ bool XMLDocument::GenerateMap(const XMLElement* element) const
             if (tempElement->Name() == kSignal_tagname)
             {
                 signal_count = count;
+                is_in_signal = true;
             }
             if (count == signal_count + 1 && tempElement->Name() == kName_tagname)
             {
@@ -1105,8 +1108,8 @@ bool XMLDocument::GenerateMap(const XMLElement* element) const
                 // std::cout << " length: " << signal_lenth << std::endl;
                 signal_to_length_map.emplace(real_signal_name2, signal_lenth);
             }
-            // signal数据类型
-            if (count > signal_count + 1 && tempElement->Name() == kSignal_data_type_tagname)
+            // signal数据类型 有层级正确但不是signal的！
+            if (is_in_signal && count > signal_count + 1 && tempElement->Name() == kSignal_data_type_tagname)
             {
                 data_type_name = tempElement->GetText();
                 int pos = data_type_name.find_last_of('/') + 1;
@@ -1129,6 +1132,7 @@ bool XMLDocument::GenerateMap(const XMLElement* element) const
                     signal_to_type_map.emplace(real_signal_name2, type);
                 }
                 std::cout << "signal: " << real_signal_name2 << " data type: " << data_type_name << " enum BaseType: " << static_cast<int>(signal_to_type_map.at(real_signal_name2)) << std::endl;
+                is_in_signal = false;
             }
             elementStack.push(tempElement);
             // 进入孩子
@@ -1173,7 +1177,7 @@ void PrintSignalIndexInPduMap()
 {
     for (auto &it : signal_index_in_pdu_map)
     {
-        std::cout << "In PDU " << it.first.first << ", signal " << it.first.second << " is at number " << it.second << std::endl;
+        std::cout << "In PDU " << it.first.first << ", signal " << it.first.second << " is at index " << it.second << std::endl;
     }
 }
 
@@ -1183,6 +1187,15 @@ void PrintSignalToLengthMap()
     for (auto &it : signal_to_length_map)
     {
         std::cout << "Signal " << it.first << " has length: " << it.second << std::endl;
+    }
+}
+
+// 打印 std::unordered_map<std::string, BaseType> signal_to_type_map
+void PrintSignalToTypeMap()
+{
+    for (auto &it : signal_to_type_map)
+    {
+        std::cout << "Signal " << it.first << "'s BaseType is (enum) " << static_cast<int>(it.second) << std::endl;
     }
 }
 
