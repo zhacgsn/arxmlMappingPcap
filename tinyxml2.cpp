@@ -913,7 +913,7 @@ bool XMLDocument::AcceptTree(const XMLElement* element, char targetElement[]) co
 //     return true;
 // }
 
-// 各标签名
+// 定义各标签名常量
 const std::string kId_tagname = "HEADER-ID";
 const std::string kPdu_ref_tagname = "PDU-TRIGGERING-REF";
 const std::string kPdu_tagname = "I-SIGNAL-I-PDU";
@@ -924,6 +924,7 @@ const std::string kSignal_offset_tagname = "START-POSITION";
 const std::string kLast_tagname = "UNUSED-BIT-PATTERN";
 const std::string kSignal_tagname = "I-SIGNAL";
 const std::string kSignal_length_tagname = "LENGTH";
+const std::string kSignal_data_type_tagname = "BASE-TYPE-REF";
 
 using signal_offset_pair = std::pair<std::string, int>;
 using pdu_signal_pair = std::pair<std::string, std::string>;
@@ -954,6 +955,26 @@ std::unordered_map<pdu_signal_pair, int, HashPair> signal_index_in_pdu_map;
 // 根据 signal名取 length
 std::unordered_map<std::string, int> signal_to_length_map;
 
+enum class BaseType
+{
+    A_UINT8,
+    A_UINT16,
+    A_UINT32,
+    boolean,
+    float32,
+    float64,
+    sint8,
+    sint16,
+    sint32,
+    uint8,
+    uint16,
+    uint32,
+    uint64
+};
+// 根据 signal名取数据类型
+std::unordered_map<std::string, BaseType> signal_to_type_map;
+
+
 // 深度优先
 bool XMLDocument::GenerateMap(const XMLElement* element) const
 {
@@ -975,7 +996,8 @@ bool XMLDocument::GenerateMap(const XMLElement* element) const
     std::string signal_name;
     std::string real_signal_name;
     std::string real_signal_name2;
-    std::string father_name = "";
+    // std::string father_name = "";
+    std::string data_type_name;
     int signal_offset;
     int signal_lenth = 0;
     int signal_in_pdu_count = 0;
@@ -1076,11 +1098,37 @@ bool XMLDocument::GenerateMap(const XMLElement* element) const
                 real_signal_name2 = tempElement->GetText();
                 // std::cout << "signal: " << real_signal_name2;
             }
+            // signal长度
             if (count == signal_count + 1 && tempElement->Name() == kSignal_length_tagname)
             {
                 signal_lenth = atoi(tempElement->GetText());
                 // std::cout << " length: " << signal_lenth << std::endl;
                 signal_to_length_map.emplace(real_signal_name2, signal_lenth);
+            }
+            // signal数据类型
+            if (count > signal_count + 1 && tempElement->Name() == kSignal_data_type_tagname)
+            {
+                data_type_name = tempElement->GetText();
+                int pos = data_type_name.find_last_of('/') + 1;
+                data_type_name = data_type_name.substr(pos);
+
+                // 设置枚举值
+                if (data_type_name == "A_UINT8")
+                {
+                    BaseType type = BaseType::A_UINT8;
+                    signal_to_type_map.emplace(real_signal_name2, type);
+                }
+                else if (data_type_name == "A_UINT16")
+                {
+                    BaseType type = BaseType::A_UINT16;
+                    signal_to_type_map.emplace(real_signal_name2, type);
+                }
+                else if (data_type_name == "A_UINT32")
+                {
+                    BaseType type = BaseType::A_UINT32;
+                    signal_to_type_map.emplace(real_signal_name2, type);
+                }
+                std::cout << "signal: " << real_signal_name2 << " data type: " << data_type_name << " enum BaseType: " << static_cast<int>(signal_to_type_map.at(real_signal_name2)) << std::endl;
             }
             elementStack.push(tempElement);
             // 进入孩子

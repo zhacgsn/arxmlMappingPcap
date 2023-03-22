@@ -170,7 +170,7 @@ void get_pcap_data()
     {
         fread(&packetHeader, sizeof(PcapPkthdr_t), 1, fp);
         int len = packetHeader.caplen;
-        std::cout << "packetHeadergetLen: " << len << std::endl;
+        // std::cout << "packetHeadergetLen: " << len << std::endl;
         fseek(fp, LEN_UDP_HEADER, SEEK_CUR);
         len -= LEN_UDP_HEADER;
         while (len > 0)
@@ -183,13 +183,13 @@ void get_pcap_data()
             //uint32_t *net_id = ((uint32_t *)p_net_id);
             uint32_t id = htonl(net_id);
             len -= sizeof(uint32_t);
-            std::cout << "id: " << id << " len: " << len << std::endl;
+            // std::cout << "id: " << id << " len: " << len << std::endl;
             
             uint32_t net_pdu_len;
             fread(&net_pdu_len, sizeof(uint32_t), 1, fp);
             uint32_t pdu_len = htonl(net_pdu_len);
             len -= sizeof(uint32_t);
-            std::cout << "pdu_len: " << pdu_len << " len: "<< len << std::endl;
+            // std::cout << "pdu_len: " << pdu_len << " len: "<< len << std::endl;
 
             // 读入内存
             // char *buf = (char *)malloc(pdu_len);
@@ -297,7 +297,7 @@ char* get_signal_data(std::string pdu_name, std::string signal_name)
             signal_offset_pair sig = tmp_vec[signal_index];
             int offset_bit = sig.second;
             std::cout << "signal_index: " << signal_index << endl;
-            std::cout << "offset_bit: " << offset_bit << "  " << "start_index: " << start_index << endl;
+            std::cout << "signal offset_bit: " << offset_bit << "  " << " PDU start_index: " << start_index << endl;
             return buffer.get_start_address_by_index(start_index + offset_bit / 8);
 
         }
@@ -308,8 +308,17 @@ char* get_signal_data(std::string pdu_name, std::string signal_name)
 void test1()
 {
     // 输入 pdu名字与signal名字
-    uint8_t *value = (uint8_t*)get_signal_data("VehicleSpeed", "VehicleDirection");
-    std::cout << "the value is " << int(*value) << std::endl;
+    uint16_t *value = (uint16_t*)get_signal_data("VehicleSpeed", "VehicleSpeed");
+    std::cout << "signal value is: " << int(*value) << std::endl;
+
+    uint8_t *value1 = (uint8_t*)get_signal_data("VehicleSpeed", "VehicleDirection");
+    std::cout << "signal value is: " << int(*value1) << std::endl;
+
+    uint32_t *value2 = (uint32_t*)get_signal_data("VehicleDistance", "VehicleTripDistance");
+    std::cout << "signal value is: " << int(*value2) << std::endl;
+
+    value2 = (uint32_t*)get_signal_data("VehicleDistance", "VehicleTotalDistance");
+    std::cout << "signal value is: " << int(*value2) << std::endl;
 }
 
 int main()
@@ -321,19 +330,30 @@ int main()
 		XMLElement* rootElement = doc.FirstChildElement();
 		// doc.Print();
 		doc.GenerateMap(rootElement);
-		PrintIdToPduMap();
-		std::cout << endl;
-		PrintSignalToPduMap();
-		std::cout << endl;
-		PrintSignalToLengthMap();
-		std::cout << endl;
-		PrintSignalIndexInPduMap();
-		std::cout << std::endl;
-		get_pcap_data();
-        std::cout << std::endl;
-		print_pcap_data();
 
-        test1();
+        // std::cout << "id_to_pdu_map: " << std::endl;
+		// PrintIdToPduMap();
+		// std::cout << endl;
+
+        // std::cout << "signal_to_pdu_map: " << std::endl;
+		// PrintSignalToPduMap();
+		// std::cout << endl;
+
+        // std::cout << "signal_to_length_map: " << std::endl;
+		// PrintSignalToLengthMap();
+		// std::cout << endl;
+
+        // std::cout << "signal_index_in_pdu_map: " << std::endl;
+		// PrintSignalIndexInPduMap();
+		// std::cout << std::endl;
+
+        // std::cout << "get_pcacp_data(): " << std::endl;
+		// get_pcap_data();
+        // std::cout << std::endl;
+		// print_pcap_data();
+
+        // std::cout << "If using BaseTypes: " << std::endl;
+        // test1();
 	}
     return 0;
 }
