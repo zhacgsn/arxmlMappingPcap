@@ -19,6 +19,7 @@ public:
     void ensure_writable_bytes(size_t len);
     char* get_head_address();
 
+    std::variant<uint8_t, uint16_t, uint32_t> get_signal_value(int start_index, int offset_bit, int signal_len, BaseType type);
 private:
     void make_space(size_t len);
     char* buffer_;

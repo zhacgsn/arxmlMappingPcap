@@ -23,7 +23,7 @@ distribution.
 
 #include "tinyxml2.h"
 #include "PDUClass.h"
-
+#include "PDUStruct.h"
 #include <new>		// yes, this one new style header, is in the Android SDK.
 #if defined(ANDROID_NDK) || defined(__BORLANDC__) || defined(__QNXNTO__)
 #   include <stddef.h>
@@ -956,22 +956,6 @@ std::unordered_map<pdu_signal_pair, int, HashPair> signal_index_in_pdu_map;
 // 根据 signal名取 length
 std::unordered_map<std::string, int> signal_to_length_map;
 
-enum class BaseType
-{
-    A_UINT8,
-    A_UINT16,
-    A_UINT32,
-    boolean,
-    float32,
-    float64,
-    sint8,
-    sint16,
-    sint32,
-    uint8,
-    uint16,
-    uint32,
-    uint64
-};
 // 根据 signal名取数据类型
 std::unordered_map<std::string, BaseType> signal_to_type_map;
 

@@ -1,9 +1,12 @@
 #include "PDUBuffer.h"
 #include <stdio.h>
 #include <string>
-
+#include <variant>
+#include "PDUStruct.h"
+#include <iostream>
 const uint32_t INITIAL_SIZE = 10240;
 const uint32_t MORE_SIZE = 10240;
+
 
 PDUBuffer::PDUBuffer()
     : writeIndex_(0),
@@ -71,7 +74,96 @@ char* PDUBuffer::get_head_address()
     return buffer_;
 }
 
-
+std::variant<uint8_t, uint16_t, uint32_t> PDUBuffer::get_signal_value(int start_index, int offset_bit, int signal_len, BaseType type)
+{
+    std::cout << "In func get_signal_value" << std::endl;
+    switch (type)
+    {
+    case BaseType::A_UINT8:
+        if (offset_bit % 8 == 0 && signal_len == 8)
+        {
+            uint8_t *tmp_value = (uint8_t*)&buffer_[start_index + offset_bit/8];
+            //uint8_t value = htonl(*tmp_value);
+            std::cout << "A_UINT8: " << int(*tmp_value)<< std::endl;
+            return *tmp_value;
+        }
+        else if (offset_bit % 8 == 0)
+        {
+            int left_bit = 8 - signal_len;
+            uint8_t *tmp_value = (uint8_t*)&buffer_[start_index + offset_bit/8];
+            uint8_t value = htonl(*tmp_value) >> left_bit;
+            std::cout << "A_UINT8: " << value<< std::endl;
+            return value;
+        }
+        else
+        {
+            // 去头去尾,多读一个字节
+            uint16_t *tmp_value = (uint16_t*)&buffer_[start_index + offset_bit/8];
+            int left_offset = offset_bit % 8;
+            int left_bit = 8 - signal_len;
+            uint8_t value = (htonl(*tmp_value) << left_offset) >> (8 + left_offset + left_bit);
+            std::cout << "A_UINT8: " << value<< std::endl;
+            return value;
+        }
+        break;
+    case BaseType::A_UINT16:
+        if (offset_bit % 8 == 0 && signal_len == 16)
+        {
+            uint16_t *tmp_value = (uint16_t*)&buffer_[start_index + offset_bit/8];
+            uint16_t value = htonl(*tmp_value);
+            std::cout << "A_UINT16: " << value << std::endl;
+            return value;
+        }
+        else if (offset_bit % 8 == 0)
+        {
+            int left_bit = 16 - signal_len;
+            uint16_t *tmp_value = (uint16_t*)&buffer_[start_index + offset_bit/8];
+            uint16_t value = htonl(*tmp_value) >> left_bit;
+            std::cout << "A_UINT16: " << value << std::endl;
+            return value;            
+        }
+        else
+        {
+            uint32_t *tmp_value = (uint32_t*)&buffer_[start_index + offset_bit/8];
+            int left_offset = offset_bit % 8;
+            int left_bit = 8 - signal_len;
+            uint8_t value = (htonl(*tmp_value) << left_offset) >> (16 + left_offset + left_bit);
+            std::cout << "A_UINT16: " << value<< std::endl;
+            return value;
+        }
+        break;
+    case BaseType::A_UINT32:
+         if (offset_bit % 8 == 0 && signal_len == 32)
+        {
+            uint32_t *tmp_value = (uint32_t*)&buffer_[start_index + offset_bit/8];
+            uint32_t value = htonl(*tmp_value);
+            std::cout << "A_UINT32: " << value << std::endl;
+            return value;
+        }
+        else if (offset_bit % 8 == 0)
+        {
+            int left_bit = 32 - signal_len;
+            uint32_t *tmp_value = (uint32_t*)&buffer_[start_index + offset_bit/8];
+            uint32_t value = htonl(*tmp_value) >> left_bit;
+            std::cout << "A_UINT32: " << value << std::endl;
+            return value;              
+        }
+        else
+        {
+            uint64_t *tmp_value = (uint64_t*)&buffer_[start_index + offset_bit/8];
+            int left_offset = offset_bit % 8;
+            int left_bit = 8 - signal_len;
+            uint32_t value = (htonl(*tmp_value) << left_offset) >> (32 + left_offset + left_bit);
+            std::cout << "A_UINT32: " << value<< std::endl;
+            return value;
+        }   
+        break;
+    default:
+        break;
+    }
+    uint32_t tmp;
+    return tmp;
+}
 // // std::vector<std::pair<int, std::map<std::string, std::vector<int>>>> pcap_data;
 // PDUBuffer buffer;
 // int count = 0;

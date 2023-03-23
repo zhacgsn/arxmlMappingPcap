@@ -263,24 +263,6 @@ void print_pcap_data()
 
 char* get_signal_data(std::string pdu_name, std::string signal_name)
 {
-    // for (auto [key, value] : pcap_data)
-    // {
-    //     for (auto [k, v] : value)
-    //     {
-    //         if (k.first == pdu_name)
-    //         {
-    //             int start_index = k.second;
-    //             // 需进行非空判断
-    //             pdu_signal_pair tmp(pdu_name, signal_name);
-    //             int index = signal_index_in_pdu_map[tmp];
-    //             std::vector<signal_offset_pair>  tmp_vec = signal_to_pdu_map[pdu_name];
-    //             signal_offset_pair sig = tmp_vec[index];
-    //             int number = sig.second;
-    //             int siganl_offset = v[number];
-    //             return buffer.get_start_address_by_index(start_index + siganl_offset\8);
-    //         }
-    //     }
-    // }
 
     for (auto v : pcap_data)
     {
@@ -298,6 +280,10 @@ char* get_signal_data(std::string pdu_name, std::string signal_name)
             int offset_bit = sig.second;
             std::cout << "signal_index: " << signal_index << endl;
             std::cout << "signal offset_bit: " << offset_bit << "  " << " PDU start_index: " << start_index << endl;
+            int signal_len = signal_to_length_map[signal_name];
+            std::cout << "before func get_signal_value" << std::endl;
+            auto value = buffer.get_signal_value(start_index, offset_bit, signal_len, signal_to_type_map[signal_name]);
+            // std::cout << "The value is " << value << std::endl;
             return buffer.get_start_address_by_index(start_index + offset_bit / 8);
 
         }
@@ -327,9 +313,9 @@ int main()
     doc.LoadFile("../Network.arxml");
 
     {
-		XMLElement* root_element = doc.FirstChildElement();
+		XMLElement* rootElement = doc.FirstChildElement();
 		// doc.Print();
-		doc.GenerateMap(root_element);
+		doc.GenerateMap(rootElement);
 
         std::cout << "id_to_pdu_map: " << std::endl;
 		PrintIdToPduMap();
