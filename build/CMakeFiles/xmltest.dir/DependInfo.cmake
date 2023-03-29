@@ -8,12 +8,12 @@ set(CMAKE_DEPENDS_LANGUAGES
 
 # The set of dependency files which are needed:
 set(CMAKE_DEPENDS_DEPENDENCY_FILES
-  "/Users/zhacgsn/VSProjects/tinyxml2/xmltest.cpp" "CMakeFiles/xmltest.dir/xmltest.cpp.o" "gcc" "CMakeFiles/xmltest.dir/xmltest.cpp.o.d"
+  "/Users/zhacgsn/VSProjects/arxml-mapping-pcap/xmltest.cpp" "CMakeFiles/xmltest.dir/xmltest.cpp.o" "gcc" "CMakeFiles/xmltest.dir/xmltest.cpp.o.d"
   )
 
 # Targets to which this target links.
 set(CMAKE_TARGET_LINKED_INFO_FILES
-  "/Users/zhacgsn/VSProjects/tinyxml2/build/CMakeFiles/tinyxml2.dir/DependInfo.cmake"
+  "/Users/zhacgsn/VSProjects/arxml-mapping-pcap/build/CMakeFiles/tinyxml2.dir/DependInfo.cmake"
   )
 
 # Fortran module output directory.

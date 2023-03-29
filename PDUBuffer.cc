@@ -76,7 +76,6 @@ char* PDUBuffer::get_head_address()
 
 std::variant<uint8_t, uint16_t, uint32_t> PDUBuffer::get_signal_value(int start_index, int offset_bit, int signal_len, BaseType type)
 {
-    std::cout << "In func get_signal_value" << std::endl;
     switch (type)
     {
     case BaseType::A_UINT8:

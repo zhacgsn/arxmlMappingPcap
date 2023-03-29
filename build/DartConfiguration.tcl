@@ -4,8 +4,8 @@
 
 
 # Configuration directories and files
-SourceDirectory: /Users/zhacgsn/VSProjects/tinyxml2
-BuildDirectory: /Users/zhacgsn/VSProjects/tinyxml2/build
+SourceDirectory: /Users/zhacgsn/VSProjects/arxml-mapping-pcap
+BuildDirectory: /Users/zhacgsn/VSProjects/arxml-mapping-pcap/build
 
 # Where to place the cost data store
 CostDataFile: 
@@ -27,7 +27,7 @@ SubmitInactivityTimeout:
 NightlyStartTime: 00:00:00 EDT
 
 # Commands for the build/test/submit cycle
-ConfigureCommand: "/opt/homebrew/Cellar/cmake/3.25.2/bin/cmake" "/Users/zhacgsn/VSProjects/tinyxml2"
+ConfigureCommand: "/opt/homebrew/Cellar/cmake/3.25.2/bin/cmake" "/Users/zhacgsn/VSProjects/arxml-mapping-pcap"
 MakeCommand: /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake --build . --config "${CTEST_CONFIGURATION_TYPE}"
 DefaultCTestConfigurationType: Release
 

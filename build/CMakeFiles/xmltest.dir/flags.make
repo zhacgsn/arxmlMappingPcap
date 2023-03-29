@@ -4,7 +4,7 @@
 # compile CXX with /Library/Developer/CommandLineTools/usr/bin/c++
 CXX_DEFINES = 
 
-CXX_INCLUDES = -I/Users/zhacgsn/VSProjects/tinyxml2
+CXX_INCLUDES = -I/Users/zhacgsn/VSProjects/arxml-mapping-pcap
 
 CXX_FLAGSarm64 =  -arch arm64 -isysroot /Library/Developer/CommandLineTools/SDKs/MacOSX13.1.sdk -fvisibility=hidden -fvisibility-inlines-hidden -std=gnu++17
 

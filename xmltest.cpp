@@ -6,11 +6,22 @@
 
 #include "tinyxml2.h"
 #include "tinyxml2.cpp"
+#include "arxml_mapping.h"
+#include "arxml_mapping.cc"
+#include "PDUBuffer.cc"
+
+#include <iostream>
+#include <stdio.h>
+#include <vector>
+#include <string>
+#include <arpa/inet.h>
+#include <math.h>
 #include <cerrno>
 #include <cstdlib>
 #include <cstring>
 #include <ctime>
 #include <map>
+
 #define MAXSIZE 100
 
 #if defined( _MSC_VER ) || defined (WIN32)
@@ -26,6 +37,7 @@
 
 using namespace tinyxml2;
 using namespace std;
+
 int gPass = 0;
 int gFail = 0;
 
@@ -111,13 +123,6 @@ void NullLineEndings( char* p )
 		++p;
 	}
 }
-#include <iostream>
-#include <stdio.h>
-#include <vector>
-#include <string>
-#include <arpa/inet.h>
-#include <math.h>
-#include "PDUBuffer.cc"
 
 /*pcap file header*/
 typedef struct PcapFileHeader
@@ -153,7 +158,7 @@ using pdu_pair = std::pair<std::string, int>;
 std::vector<std::pair<int, std::map<std::string, int>>> pcap_data;
 PDUBuffer buffer;
 
-void get_pcap_data()
+void get_pcap_data(const ArxmlMapping &arxml_mapping_instance)
 { 
     int count = 0;
 
@@ -200,7 +205,7 @@ void get_pcap_data()
             buffer.update_write_index(pdu_len);
             len -= pdu_len;
 
-            std::string name = id_to_pdu_map[id];
+            std::string name = arxml_mapping_instance.id_to_pdu_map_.at(id);
             std::map<std::string, int> mp;
             mp[name] = start_write_index;
             pcap_data.push_back(std::make_pair(count, mp));
@@ -224,25 +229,6 @@ void get_pcap_data()
     }
 }
 
-// void print_pcap_data()
-// {
-//     for (auto v : pcap_data)
-//     {
-//         std::cout << "The number is " << v.first;
-//         for (auto [m_k, m_v] : v.second)
-//         {
-//             std::cout << " The PDU is " << m_k << " The index is ";
-//             for (auto v_v : m_v)
-//             {
-//                 std::cout << v_v << "  ";
-//             }
-//         }
-//         std::cout << std::endl;
-//     }
-// }
-// std::vector<std::pair<int, std::map<std::string, int>>> pcap_data;
-
-
 void print_pcap_data()
 {
     for (auto v : pcap_data)
@@ -261,7 +247,7 @@ void print_pcap_data()
     
 }
 
-char* get_signal_data(std::string pdu_name, std::string signal_name)
+char* get_signal_data(std::string pdu_name, std::string signal_name, const ArxmlMapping &arxml_mapping_instance)
 {
 
     for (auto v : pcap_data)
@@ -273,77 +259,76 @@ char* get_signal_data(std::string pdu_name, std::string signal_name)
         else
         {
             int start_index = v.second[pdu_name];
-            pdu_signal_pair tmp(pdu_name, signal_name);
-            int signal_index = signal_index_in_pdu_map[tmp];
-            std::vector<signal_offset_pair>  tmp_vec = signal_to_pdu_map[pdu_name];
-            signal_offset_pair sig = tmp_vec[signal_index];
+            ArxmlMapping::pdu_signal_pair tmp(pdu_name, signal_name);
+            int signal_index = arxml_mapping_instance.signal_index_in_pdu_map_.at(tmp);
+            std::vector<ArxmlMapping::signal_offset_pair>  tmp_vec = arxml_mapping_instance.signal_to_pdu_map_.at(pdu_name);
+            ArxmlMapping::signal_offset_pair sig = tmp_vec[signal_index];
             int offset_bit = sig.second;
             std::cout << "signal_index: " << signal_index << endl;
-            std::cout << "signal offset_bit: " << offset_bit << "  " << " PDU start_index: " << start_index << endl;
-            int signal_len = signal_to_length_map[signal_name];
-            std::cout << "before func get_signal_value" << std::endl;
-            auto value = buffer.get_signal_value(start_index, offset_bit, signal_len, signal_to_type_map[signal_name]);
+            std::cout << "signal offset_bit: " << offset_bit << "  " << " PDU offset_byte: " << start_index << endl;
+            int signal_len = arxml_mapping_instance.signal_to_length_map_.at(signal_name);
+            auto value = buffer.get_signal_value(start_index, offset_bit, signal_len, arxml_mapping_instance.signal_to_type_map_.at(signal_name));
             // std::cout << "The value is " << value << std::endl;
             return buffer.get_start_address_by_index(start_index + offset_bit / 8);
-
         }
     }
     return nullptr;
 }
 
-void test1()
+void test1(const ArxmlMapping &arxml_mapping_instance)
 {
     // 输入 pdu名字与signal名字
-    uint16_t *value = (uint16_t*)get_signal_data("VehicleSpeed", "VehicleSpeed");
+    uint16_t *value = (uint16_t*)get_signal_data("VehicleSpeed", "VehicleSpeed", arxml_mapping_instance);
     std::cout << "signal value is: " << int(*value) << std::endl;
 
-    uint8_t *value1 = (uint8_t*)get_signal_data("VehicleSpeed", "VehicleDirection");
+    uint8_t *value1 = (uint8_t*)get_signal_data("VehicleSpeed", "VehicleDirection", arxml_mapping_instance);
     std::cout << "signal value is: " << int(*value1) << std::endl;
 
-    uint32_t *value2 = (uint32_t*)get_signal_data("VehicleDistance", "VehicleTripDistance");
+    uint32_t *value2 = (uint32_t*)get_signal_data("VehicleDistance", "VehicleTripDistance", arxml_mapping_instance);
     std::cout << "signal value is: " << int(*value2) << std::endl;
 
-    value2 = (uint32_t*)get_signal_data("VehicleDistance", "VehicleTotalDistance");
+    value2 = (uint32_t*)get_signal_data("VehicleDistance", "VehicleTotalDistance", arxml_mapping_instance);
     std::cout << "signal value is: " << int(*value2) << std::endl;
 }
 
 int main()
 {
     XMLDocument doc;
+    // doc.LoadFile("../FEEA30.arxml");
     doc.LoadFile("../Network.arxml");
 
-    {
-		XMLElement* rootElement = doc.FirstChildElement();
-		// doc.Print();
-		doc.GenerateMap(rootElement);
+    ArxmlMapping arxml_mapping_instance;
 
-        std::cout << "id_to_pdu_map: " << std::endl;
-		PrintIdToPduMap();
-		std::cout << endl;
+    XMLElement* rootElement = doc.FirstChildElement();
+    // doc.Print();
 
-        std::cout << "signal_to_pdu_map: " << std::endl;
-		PrintSignalToPduMap();
-		std::cout << endl;
+    arxml_mapping_instance.GenerateMap(rootElement);
 
-        std::cout << "signal_to_length_map: " << std::endl;
-		PrintSignalToLengthMap();
-		std::cout << endl;
+    arxml_mapping_instance.PrintIdToPduMap();
+    std::cout << endl;
 
-        std::cout << "signal_index_in_pdu_map: " << std::endl;
-		PrintSignalIndexInPduMap();
-		std::cout << std::endl;
+    arxml_mapping_instance.PrintSignalToPduMap();
+    std::cout << endl;
 
-        std::cout << "signal_to_type_map: " << std::endl;
-        PrintSignalToTypeMap();
-		std::cout << std::endl;
+    arxml_mapping_instance.PrintSignalToLengthMap();
+    std::cout << endl;
 
-        std::cout << "get_pcacp_data(): " << std::endl;
-		get_pcap_data();
-        std::cout << std::endl;
-		print_pcap_data();
+    arxml_mapping_instance.PrintSignalIndexInPduMap();
+    std::cout << std::endl;
 
-        std::cout << "If using BaseTypes: " << std::endl;
-        test1();
-	}
+    arxml_mapping_instance.PrintSignalToTypeMap();
+    std::cout << std::endl;
+
+    arxml_mapping_instance.PrintSignalToByteOrderMap();
+    std::cout << std::endl;
+
+    std::cout << "get_pcacp_data(): " << std::endl;
+    get_pcap_data(arxml_mapping_instance);
+    std::cout << std::endl;
+    print_pcap_data();
+
+    std::cout << "If using BaseTypes: " << std::endl;
+    test1(arxml_mapping_instance);
+
     return 0;
 }

@@ -22,7 +22,6 @@ distribution.
 */
 
 #include "tinyxml2.h"
-#include "PDUClass.h"
 #include "PDUStruct.h"
 #include <new>		// yes, this one new style header, is in the Android SDK.
 #if defined(ANDROID_NDK) || defined(__BORLANDC__) || defined(__QNXNTO__)
@@ -808,57 +807,26 @@ bool XMLDocument::Accept( XMLVisitor* visitor ) const
     return visitor->VisitExit( *this );
 }
 
-const XMLElement *StartElement;
+// const XMLElement *StartElement;
 
-
-bool XMLDocument::AcceptTree(const XMLElement* element, char targetElement[]) const
-{
-    for (const XMLElement* node=element->FirstChildElement(); node; node=node->NextSiblingElement() ) {
-
-        if (strcmp(node->Name(), targetElement) == 0)
-        {
-            printf("找到起始节点\n");
-            StartElement = node;
-            // printf("%s---\n", StartElement->Name());
-            break;
-        }
-        if (!node->NoChildren())
-        {
-            AcceptTree(node, targetElement);
-        }
-    }
-    return true;
-}
-
-
-// std::multimap<std::string, std::multimap<std::string, int> > Map;
-
-
-// bool XMLDocument::generateMap(const XMLElement* element) const
+// bool XMLDocument::AcceptTree(const XMLElement* element, char targetElement[]) const
 // {
 //     for (const XMLElement* node=element->FirstChildElement(); node; node=node->NextSiblingElement() ) {
-//         printf("%s---", node->Name());
 
-//         const XMLAttribute* attribute = node->FirstAttribute();
-
-//         while (attribute)
+//         if (strcmp(node->Name(), targetElement) == 0)
 //         {
-//             printf("属性: %s = %s ", attribute->Name(), attribute->Value());
-//             attribute = attribute->Next();
-//         }
-//         if (node->GetText())
-//         {
-//             printf("文本: %s", node->GetText());
+//             printf("找到起始节点\n");
+//             StartElement = node;
+//             // printf("%s---\n", StartElement->Name());
+//             break;
 //         }
 //         if (!node->NoChildren())
 //         {
-//             printf("\n进入孩子\n");
-//             generateMap(node);
+//             AcceptTree(node, targetElement);
 //         }
 //     }
 //     return true;
 // }
-
 
 // // 层次遍历
 // bool XMLDocument::generateMap2(const XMLElement* element) const
@@ -912,289 +880,6 @@ bool XMLDocument::AcceptTree(const XMLElement* element, char targetElement[]) co
 //     }
 //     return true;
 // }
-
-// 定义各标签名常量
-const std::string kId_tagname = "HEADER-ID";
-const std::string kPdu_ref_tagname = "PDU-TRIGGERING-REF";
-const std::string kPdu_tagname1 = "I-SIGNAL-I-PDU";
-const std::string kPdu_tagname2 = "NM-PDU";
-const std::string kSignal_to_pdu_map_tagname = "I-SIGNAL-TO-I-PDU-MAPPING";
-const std::string kSignal_ref_tagname = "I-SIGNAL-REF";
-const std::string kName_tagname = "SHORT-NAME";
-const std::string kSignal_offset_tagname = "START-POSITION";
-const std::string kEnd_of_pdu_tagname = "UNUSED-BIT-PATTERN";
-const std::string kSignal_tagname = "I-SIGNAL";
-const std::string kSignal_length_tagname = "LENGTH";
-const std::string kSignal_data_type_tagname = "BASE-TYPE-REF";
-
-using signal_offset_pair = std::pair<std::string, int>;
-using pdu_signal_pair = std::pair<std::string, std::string>;
-
-// 定义 unordered_map键的哈希函数
-struct HashPair
-{
-    template <class T1, class T2>
-    size_t operator() (const std::pair<T1, T2>& p) const
-    {
-        auto hash1 = std::hash<T1>{} (p.first);
-        auto hash2 = std::hash<T2>{} (p.second);
-
-        if (hash1 != hash2)
-        {
-            return hash1 ^ hash2;
-        }
-        return hash1;
-    }
-};
-
-// 根据 HEADER-ID取 pdu名
-std::unordered_map<int, std::string> id_to_pdu_map;
-// 根据 pdu名取 (signal名，signal偏移量)数组
-std::map<std::string, std::vector<signal_offset_pair>> signal_to_pdu_map;
-// 根据 (pdu名, signal名)取 signal编号，从 1开始
-std::unordered_map<pdu_signal_pair, int, HashPair> signal_index_in_pdu_map;
-// 根据 signal名取 length
-std::unordered_map<std::string, int> signal_to_length_map;
-
-// 根据 signal名取数据类型
-std::unordered_map<std::string, BaseType> signal_to_type_map;
-
-
-// 深度优先
-bool XMLDocument::GenerateMap(const XMLElement* element) const
-{
-    std::stack<const XMLElement*> elementStack;
-    const XMLElement* tempElement = element;
-
-    // 记录当前遍历层级
-    int count = -1;
-    int pdu_count = INT_MAX;
-    int pdu_name_count = INT_MAX;
-    int pdu_id_count = INT_MAX;
-    int signal_count = INT_MAX;
-
-    // 标识是否位于 signal标签内部
-    bool is_in_signal = false;
-    // 标识是否位于 pdu标签内部（I-SIGNAL-I-PDU和其他 PDU如 NM-PDU是并列关系）
-    bool is_in_pdu = false;
-
-    // 标识是否已确定 signal名和 offset
-    bool signal_set = false;
-    bool offset_set = false;
-    
-    int pdu_id;
-    std::string pdu_ref_name;
-    std::string pdu_name;
-    std::string signal_name;
-    std::string real_signal_name;
-    std::string real_signal_name2;
-    // std::string father_name = "";
-    std::string data_type_name;
-    int signal_offset;
-    int signal_lenth = 0;
-    int signal_in_pdu_count = 0;
-
-    std::vector<signal_offset_pair> signal_offset_pair_vec;
-
-    while (tempElement != NULL || !elementStack.empty())
-    {
-        while (tempElement != NULL)
-        {
-            // 遍历到 HEADER-ID标签
-            if (tempElement->Name() == kId_tagname)
-            {
-                // std::cout << "HEADER-ID: " << tempElement->GetText() << std::endl;
-                pdu_id_count = count;
-                pdu_id = atoi(tempElement->GetText());
-            }
-            // 处理 PDU-TRIGGERING-REF，从路径取出 PDU名
-            if (count == pdu_id_count && tempElement->Name() == kPdu_ref_tagname)
-            {
-                // std::cout << "PDU-TRIGGERING-REF: " << tempElement->GetText() << std::endl;
-                pdu_ref_name = tempElement->GetText();
-                int pos = pdu_ref_name.find_last_of('_') + 1;
-                pdu_ref_name = pdu_ref_name.substr(pos);
-                // std::cout << "HEADER-ID " << pdu_id << "---->PDU: " << pdu_ref_name << std::endl;
-                id_to_pdu_map.emplace(pdu_id, pdu_ref_name);
-            }
-            // 遍历到 pdu标签名，记录此时层级 count
-            if (tempElement->Name() == kPdu_tagname1 || tempElement->Name() == kPdu_tagname2)
-            {
-                // std::cout << tempElement->Name();
-                pdu_count = count;
-                pdu_name_count = pdu_count + 1;
-                is_in_pdu = true;
-                // 进入新 pdu，signal重新计数
-            }
-            // pdu SHORT-NAME, 不只是 I-PDU这一种 PDU!
-            if (count == pdu_name_count && tempElement->Name() == kName_tagname)
-            {
-                // std::cout << "pdu名: " << tempElement->GetText() << std::endl;
-                pdu_name = tempElement->GetText();
-                signal_in_pdu_count = 0;
-            }
-            // signal SHORT-NAME (IDxx)
-            if (count > pdu_name_count && tempElement->Name() == kName_tagname)
-            {
-                // std::cout << "signal SHORT-NAME: " << tempElement->GetText() << std::endl;
-                signal_name = tempElement->GetText();
-                signal_set = true;
-            }
-            // 处理 I-SIGNAL-REF，从路径取出 signal名
-            if (count > pdu_name_count && tempElement->Name() == kSignal_ref_tagname)
-            {
-                // std::cout << "signal名: " << tempElement->GetText() << std::endl;
-                real_signal_name = tempElement->GetText();
-                int pos = real_signal_name.find_last_of('/') + 1;
-                real_signal_name = real_signal_name.substr(pos);
-                // std::cout << "real signal名: " << real_signal_name << std::endl;
-            }
-            // 映射标签名
-            if (count > pdu_count && tempElement->Name() == kSignal_to_pdu_map_tagname)
-            {
-                // std::cout << tempElement->Name();
-            }
-            // signal偏移量
-            if (count > pdu_count && tempElement->Name() == kSignal_offset_tagname)
-            {
-                // std::cout << tempElement->GetText() << std::endl;
-                signal_offset = atoi(tempElement->GetText());
-                offset_set = true;
-            }
-            // 某 pdu内某 signal的名字和偏移量均已确定
-            if (count > pdu_count && signal_set && offset_set)
-            {
-                // std::cout << "pdu: " << pdu_name << " has signal: " << real_signal_name << "at " << signal_offset << std::endl;
-                // signal index vector
-                signal_offset_pair_vec.push_back(std::make_pair(real_signal_name, signal_offset));
-                // std::cout << "In PDU " << pdu_name << ", signal " << real_signal_name << " is at number " << signal_in_pdu_count << std::endl;
-                signal_index_in_pdu_map.emplace(std::make_pair(pdu_name, real_signal_name), signal_in_pdu_count);
-                signal_in_pdu_count++;
-
-                signal_set = false;
-                offset_set = false;
-            }
-            // 当前 pdu内 signal名字与偏移量已加入 vector
-            if (count > pdu_count && tempElement->Name() == kEnd_of_pdu_tagname)
-            {
-                // vector加入 map
-                signal_to_pdu_map.emplace(pdu_name, signal_offset_pair_vec);
-                // 清空 vector，用于存放下一个 pdu的signal
-                signal_offset_pair_vec.clear();
-                is_in_pdu = false;
-            }
-            if (tempElement->Name() == kSignal_tagname)
-            {
-                signal_count = count;
-                is_in_signal = true;
-            }
-            if (count == signal_count + 1 && tempElement->Name() == kName_tagname)
-            {
-                real_signal_name2 = tempElement->GetText();
-                // std::cout << "signal: " << real_signal_name2;
-            }
-            // signal长度
-            if (count == signal_count + 1 && tempElement->Name() == kSignal_length_tagname)
-            {
-                signal_lenth = atoi(tempElement->GetText());
-                // std::cout << " length: " << signal_lenth << std::endl;
-                signal_to_length_map.emplace(real_signal_name2, signal_lenth);
-            }
-            // signal数据类型 有层级正确但不是signal的！
-            if (is_in_signal && count > signal_count + 1 && tempElement->Name() == kSignal_data_type_tagname)
-            {
-                data_type_name = tempElement->GetText();
-                int pos = data_type_name.find_last_of('/') + 1;
-                data_type_name = data_type_name.substr(pos);
-
-                // 设置枚举值
-                if (data_type_name == "A_UINT8")
-                {
-                    BaseType type = BaseType::A_UINT8;
-                    signal_to_type_map.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "A_UINT16")
-                {
-                    BaseType type = BaseType::A_UINT16;
-                    signal_to_type_map.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "A_UINT32")
-                {
-                    BaseType type = BaseType::A_UINT32;
-                    signal_to_type_map.emplace(real_signal_name2, type);
-                }
-                // std::cout << "signal: " << real_signal_name2 << " data type: " << data_type_name << " enum BaseType: " << static_cast<int>(signal_to_type_map.at(real_signal_name2)) << std::endl;
-                is_in_signal = false;
-            }
-            elementStack.push(tempElement);
-            // 进入孩子
-            tempElement = tempElement->FirstChildElement();
-            count++;
-        }
-        // father_name = tempElement->Name();
-        count--;
-        tempElement = elementStack.top();
-        elementStack.pop();
-        // 进入兄弟
-        tempElement = tempElement->NextSiblingElement();
-    }
-    return true;
-}
-
-// 打印 std::map<int, std::string> id_to_pdu_map
-void PrintIdToPduMap()
-{
-    for (auto &it : id_to_pdu_map)
-    {
-        std::cout << "HEADER-ID " << it.first << "---->PDU: " << it.second << std::endl;
-    }
-}
-
-// 打印 std::map<std::string, std::vector<signal_pair>> signal_to_pdu_map
-void PrintSignalToPduMap()
-{
-    for (auto &it : signal_to_pdu_map)
-    {
-        std::cout << "PDU " << it.first << " has signal: " << std::endl;
-
-        for (auto &signal_it : it.second)
-        {
-            std::cout << "\t" << signal_it.first << " at offset " << signal_it.second << std::endl;
-        }
-    }
-}
-
-// 打印 std::unordered_map<pdu_signal_pair, int, HashPair> signal_index_in_pdu_map;
-void PrintSignalIndexInPduMap()
-{
-    for (auto &it : signal_index_in_pdu_map)
-    {
-        std::cout << "In PDU " << it.first.first << ", signal " << it.first.second << " is at index " << it.second << std::endl;
-    }
-}
-
-// 打印 std::map<std::string, int> signal_to_length_map
-void PrintSignalToLengthMap()
-{
-    for (auto &it : signal_to_length_map)
-    {
-        std::cout << "Signal " << it.first << " has length: " << it.second << std::endl;
-    }
-}
-
-// 打印 std::unordered_map<std::string, BaseType> signal_to_type_map
-void PrintSignalToTypeMap()
-{
-    for (auto &it : signal_to_type_map)
-    {
-        std::cout << "Signal " << it.first << "'s BaseType is (enum) " << static_cast<int>(it.second) << std::endl;
-    }
-}
-
-bool XMLDocument::decideClassType(const char str[]) const
-{
-    return true;
-}
 
 // --------- XMLNode ----------- //
 

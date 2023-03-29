@@ -53,10 +53,10 @@ RM = /opt/homebrew/Cellar/cmake/3.25.2/bin/cmake -E rm -f
 EQUALS = =
 
 # The top-level source directory on which CMake was run.
-CMAKE_SOURCE_DIR = /Users/zhacgsn/VSProjects/tinyxml2
+CMAKE_SOURCE_DIR = /Users/zhacgsn/VSProjects/arxml-mapping-pcap
 
 # The top-level build directory on which CMake was run.
-CMAKE_BINARY_DIR = /Users/zhacgsn/VSProjects/tinyxml2/build
+CMAKE_BINARY_DIR = /Users/zhacgsn/VSProjects/arxml-mapping-pcap/build
 
 # Utility rule file for ExperimentalCoverage.
 
@@ -82,6 +82,6 @@ CMakeFiles/ExperimentalCoverage.dir/clean:
 .PHONY : CMakeFiles/ExperimentalCoverage.dir/clean
 
 CMakeFiles/ExperimentalCoverage.dir/depend:
-	cd /Users/zhacgsn/VSProjects/tinyxml2/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/zhacgsn/VSProjects/tinyxml2 /Users/zhacgsn/VSProjects/tinyxml2 /Users/zhacgsn/VSProjects/tinyxml2/build /Users/zhacgsn/VSProjects/tinyxml2/build /Users/zhacgsn/VSProjects/tinyxml2/build/CMakeFiles/ExperimentalCoverage.dir/DependInfo.cmake --color=$(COLOR)
+	cd /Users/zhacgsn/VSProjects/arxml-mapping-pcap/build && $(CMAKE_COMMAND) -E cmake_depends "Unix Makefiles" /Users/zhacgsn/VSProjects/arxml-mapping-pcap /Users/zhacgsn/VSProjects/arxml-mapping-pcap /Users/zhacgsn/VSProjects/arxml-mapping-pcap/build /Users/zhacgsn/VSProjects/arxml-mapping-pcap/build /Users/zhacgsn/VSProjects/arxml-mapping-pcap/build/CMakeFiles/ExperimentalCoverage.dir/DependInfo.cmake --color=$(COLOR)
 .PHONY : CMakeFiles/ExperimentalCoverage.dir/depend
 

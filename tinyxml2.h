@@ -1832,11 +1832,7 @@ public:
     */
     void Print( XMLPrinter* streamer=0 ) const;
     virtual bool Accept( XMLVisitor* visitor ) const;
-    virtual bool AcceptTree(const XMLElement* element, char targetElement[]) const;
-    // virtual bool generateMap(const XMLElement* element) const;
-    // virtual bool generateMap2(const XMLElement* element) const;
-    virtual bool GenerateMap(const XMLElement* element) const;
-    virtual bool decideClassType(const char str[]) const;
+    // virtual bool AcceptTree(const XMLElement* element, char targetElement[]) const;
 
     /**
     	Create a new Element associated with
