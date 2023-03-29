@@ -1,11 +1,11 @@
 arxmlMappingPcap
 =========
 
-arxmlMappingPcap是一个根据给定.arxml配置文件读取.pcap文件中UDP报文中PDU及Signal的工具，其工作流程大致如下图所示
+arxmlMappingPcap是一个根据给定.arxml配置文件读取.pcap文件中UDP报文中PDU及Signal的工具
 
 ## What it does
 
-简单来说，arxmlMappingPcap程序从.arxml文件中获取PDU及Signal相关定义，再根据定义从UDP报文中读出各PDU及Signal的具体数据。目前只支持样例文件：Network.arxml和VGW_PDU_Packets.pcap。
+简单来说，arxmlMappingPcap程序从.arxml文件中获取PDU及Signal相关定义，再根据定义从UDP报文中读出各PDU及Signal的具体数据。
 
 Build and run
 ------
