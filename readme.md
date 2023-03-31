@@ -3,7 +3,7 @@ arxmlMappingPcap
 
 arxmlMappingPcap是一个根据给定.arxml配置文件读取.pcap文件中UDP报文中PDU及Signal的工具，其工作流程大致如下图所示
 
-<img src="./Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230323221253319.png" alt="image-20230323221253319" style="zoom: 50%;" />
+<img src="./resources/image-20230323221253319.png" alt="image-20230323221253319" style="zoom: 50%;" />
 
 ## What it does
 
@@ -37,27 +37,27 @@ $ ./xmltest
 
 id_to_pdu_map（HEADER-ID到PDU名的映射）: 
 
-<img src="/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230320211758758.png" alt="image-20230320211758758" style="zoom:50%;" />
+<img src="./resources/image-20230320211758758.png" alt="image-20230320211758758" style="zoom:50%;" />
 
 signal_to_pdu_map（PDU名到Signal名及后者在前者中的位偏移量的映射）: 
 
-<img src="/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230320211842423.png" alt="image-20230320211842423" style="zoom:50%;" />
+<img src="./resources/image-20230320211842423.png" alt="image-20230320211842423" style="zoom:50%;" />
 
 signal_to_length_map（Signal名到Signal位数的映射）: 
 
-<img src="/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230320211946536.png" alt="image-20230320211946536" style="zoom:50%;" />
+<img src="./resources/image-20230320211946536.png" alt="image-20230320211946536" style="zoom:50%;" />
 
 signal_index_in_pdu_map（PDU及其包含的Signal到后者在前者中序号的映射）**:** 
 
-<img src="/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230320212052710.png" alt="image-20230320212052710" style="zoom:50%;" />
+<img src="./resources/image-20230320212052710.png" alt="image-20230320212052710" style="zoom:50%;" />
 
 PDU在UDP报文中编号与PDU名、字节偏移量：
 
-<img src="/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230320212159398.png" alt="image-20230320212159398" style="zoom:50%;" />
+<img src="./resources/image-20230320212159398.png" alt="image-20230320212159398" style="zoom:50%;" />
 
 样例.pcap文件中各Signal数据
 
-![image-20230323203143171](/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230323203143171.png)
+![image-20230323203143171](./resources/image-20230323203143171.png)
 
 ## Figure out .arxml file structure
 
@@ -65,23 +65,23 @@ PDU在UDP报文中编号与PDU名、字节偏移量：
 
 首先从下图这部分标签可确定I-PDU在socket通信中的标识符HEADER-ID，如HEADER-ID 65536100标识了.pcap文件中UDP报文Data段开头为65536100的报文属于PDU VehicleSpeed。
 
-<img src="/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230323204030766.png" alt="image-20230323204030766"  />
+<img src="./resources/image-20230323204030766.png" alt="image-20230323204030766"  />
 
 接着，再从下图这部分标签结构确定I-SIGNAL-I-PDU VehicleSpeed长度为4个字节，它包含了I-SIGNAL VehicleSpeed和VehicleDirection（不同.arxml文件中，PDU和SIGNAL命名不一定，SHORT-NAME标签的文本是否为命名也不一定），这两个Signal在该PDU中的起始位置分别为0和16位（bit），最高有效字节在最后。
 
-<img src="/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230321095035216.png" alt="image-20230321095035216" style="zoom: 33%;" />
+<img src="./resources/image-20230321095035216.png" alt="image-20230321095035216" style="zoom: 33%;" />
 
 值得一提的是，可以猜测像PDU-TRIGGERING-REF和I-SIGNAL-REF这类“REF”标签的文本的末尾大概为PDU和Signal名称，而SHORT-NAME则不一定。
 
 接着，根据上图I-SIGNAL-REF可找到各对应Signal定义，如从下图标签结构可确定I-SIGNAL VehicleSpeed长度为16个比特，在AUTOSAR中的基本数据类型为A_UINT16。
 
-<img src="/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230321095500189.png" alt="image-20230321095500189" style="zoom:33%;" />
+<img src="./resources/image-20230321095500189.png" alt="image-20230321095500189" style="zoom:33%;" />
 
 再根据SYSTEM-SIGNAL-REF可进而找到SYSTEM-SIGNAL和COMPU-METHOD中Signal VehicleSpeed的定义，包含了该Signal的物理单位和计算方法等。
 
-<img src="/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230321095947521.png" alt="image-20230321095947521" style="zoom:33%;" />
+<img src="./resources/image-20230321095947521.png" alt="image-20230321095947521" style="zoom:33%;" />
 
-<img src="/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230321100053422.png" alt="image-20230321100053422" style="zoom:33%;" />
+<img src="./resources/image-20230321100053422.png" alt="image-20230321100053422" style="zoom:33%;" />
 
 What these files do
 ----------
@@ -126,7 +126,7 @@ XML解析所需定义与实现，主要完成解析.arxml文件，建立DOM树
 
 生成可执行测试程序。定义了用于读取.pcap文件内容的函数 `void get_pcap_data()`，依次读取文件中的每个UDP报文。
 
-<img src="/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230320210550500.png" alt="image-20230320210550500" style="zoom:50%;" />
+<img src="./resources/image-20230320210550500.png" alt="image-20230320210550500" style="zoom:50%;" />
 
 部分报文结构如上图，其中标注彩色部分为UDP报文Data段数据，读取时先去除前面非彩色部分的报文头部，再读取HEADER-ID，据此确定之后的字节为哪个PDU的Signal数据，再读取LENGTH（PDU的字节数）确定该PDU中Signal的总长度。如该例可确定HEADER-ID为03e80064 H（十进制为65536100）的PDU（名称为VehicleSpeed）包含的Signal的总长度为00000004 H（十进制为4）个字节，于是之后的4个字节000001ff H为该PDU中各Signal的数据部分，至于如何确定PDU名、包括的Signal以及各Signal长度、数据类型，则通过查询之前定义的各个映射结构来进行。
 
@@ -160,6 +160,6 @@ typedef struct PcapPkthdr
 ## Problems
 
 1. API格式是什么样的？
-2. 根据 HEADER-ID取PDU名时，PDU-TRIGGERING-REF命名不规范，目前从最后一个'/'分割，如果分割后含'pdu_triggering_'，将其去除![image-20230331155632413](/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230331155632413.png)
+2. 根据 HEADER-ID取PDU名时，PDU-TRIGGERING-REF命名不规范，目前从最后一个'/'分割，如果分割后含'pdu_triggering_'，将其去除![image-20230331155632413](./resources/image-20230331155632413.png)
 
-![image-20230331155655920](/Users/zhacgsn/VSProjects/arxml-mapping-pcap/resources/image-20230331155655920.png)
+![image-20230331155655920](./resources/image-20230331155655920.png)
