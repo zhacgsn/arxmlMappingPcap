@@ -39,8 +39,9 @@ bool ArxmlMapping::GenerateMap(const tinyxml2::XMLElement* element)
     std::string real_signal_name;
     // 从 Signal定义中取出
     std::string real_signal_name2;
-    // std::string father_name = "";
     std::string data_type_name;
+    // 从 BaseType定义中取出
+    std::string base_type_name;
     int signal_offset;
     int signal_lenth = 0;
     int signal_in_pdu_count = 0;
@@ -173,74 +174,85 @@ bool ArxmlMapping::GenerateMap(const tinyxml2::XMLElement* element)
                 int pos = data_type_name.find_last_of('/') + 1;
                 data_type_name = data_type_name.substr(pos);
 
-                // 插入 Signal名与类型枚举值映射
-                if (data_type_name == "A_UINT8")
-                {
-                    BaseType type = BaseType::A_UINT8;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "A_UINT16")
-                {
-                    BaseType type = BaseType::A_UINT16;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "A_UINT32")
-                {
-                    BaseType type = BaseType::A_UINT32;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "boolean")
-                {
-                    BaseType type = BaseType::boolean;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "float32")
-                {
-                    BaseType type = BaseType::float32;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "float64")
-                {
-                    BaseType type = BaseType::float64;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "sint8")
-                {
-                    BaseType type = BaseType::sint8;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "sint16")
-                {
-                    BaseType type = BaseType::sint16;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "sint32")
-                {
-                    BaseType type = BaseType::sint32;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "uint8")
-                {
-                    BaseType type = BaseType::uint8;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "uint16")
-                {
-                    BaseType type = BaseType::uint16;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "uint32")
-                {
-                    BaseType type = BaseType::uint32;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                else if (data_type_name == "uint64")
-                {
-                    BaseType type = BaseType::uint64;
-                    signal_to_type_map_.emplace(real_signal_name2, type);
-                }
-                // std::cout << "signal: " << real_signal_name2 << " data type: " << data_type_name << " enum BaseType: " << static_cast<int>(signal_to_type_map.at(real_signal_name2)) << std::endl;
+                signal_to_base_type_map_.emplace(real_signal_name2, data_type_name);
+
                 is_in_signal = false;
+            }
+            if (tempElement->Name() == kBase_type_tagname)
+            {
+                base_type_name = tempElement->FirstChildElement()->GetText();
+            }
+            if (tempElement->Name() == kName_tagname)
+            {
+                std::string native_name = tempElement->GetText();
+                
+                // 插入 Signal名与类型枚举值映射
+                if (native_name == "A_UINT8")
+                {
+                    NativeType type = NativeType::A_UNSIGNED_CHAR;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                else if (native_name == "A_UINT16")
+                {
+                    NativeType type = NativeType::A_UNSIGNED_SHORT;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                else if (native_name == "A_UINT32")
+                {
+                    NativeType type = NativeType::A_UNSIGNED_LONG;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                else if (native_name == "boolean")
+                {
+                    NativeType type = NativeType::A_UNSIGNED_CHAR;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                else if (native_name == "float32")
+                {
+                    NativeType type = NativeType::A_FLOAT;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                else if (native_name == "float64")
+                {
+                    NativeType type = NativeType::A_DOUBLE;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                else if (native_name == "sint8")
+                {
+                    NativeType type = NativeType::A_SIGNED_CHAR;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                else if (native_name == "sint16")
+                {
+                    NativeType type = NativeType::A_SIGNED_SHORT;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                else if (native_name == "sint32")
+                {
+                    NativeType type = NativeType::A_SIGNED_LONG;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                else if (native_name == "uint8")
+                {
+                    NativeType type = NativeType::A_UNSIGNED_CHAR;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                else if (native_name == "uint16")
+                {
+                    NativeType type = NativeType::A_UNSIGNED_SHORT;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                else if (native_name == "uint32")
+                {
+                    NativeType type = NativeType::A_UNSIGNED_LONG;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                else if (native_name == "uint64")
+                {
+                    NativeType type = NativeType::A_UNSIGNED_LONG_LONG;
+                    base_type_to_native_map_.emplace(base_type_name, type);
+                }
+                // std::cout << "signal: " << real_signal_name2 << " data type: " << data_type_name << " enum BaseType: " << static_cast<int>(base_type_to_native_map_.at(data_type_name)) << std::endl;
             }
             elementStack.push(tempElement);
             // 进入孩子
@@ -303,12 +315,22 @@ void ArxmlMapping::PrintSignalToLengthMap() const
 }
 
 // 打印 std::unordered_map<std::string, BaseType> signal_to_type_map
-void ArxmlMapping::PrintSignalToTypeMap() const
+void ArxmlMapping::PrintSignalToBaseTypeMap() const
 {
-    std::cout << "signal_to_type_map: " << std::endl;
-    for (const auto &[signal, type] : signal_to_type_map_)
+    std::cout << "signal_to_base_type_map_: " << std::endl;
+    for (const auto &[signal, base_type] : signal_to_base_type_map_)
     {
-        std::cout << "Signal " << signal << "'s BaseType is (enum) " << static_cast<int>(type) << std::endl;
+        std::cout << "Signal " << signal << "'s BaseType is " << base_type << std::endl;
+    }
+}
+
+// 打印 std::unordered_map<std::string, std::string> base_type_to_native_map_
+void ArxmlMapping::PrintBaseTypeToNativeMap() const
+{
+    std::cout << "base_type_to_native_map_: " << std::endl;
+    for (const auto &[base_type, native] : base_type_to_native_map_)
+    {
+        std::cout << "BaseType " << base_type << "'s native type is " << static_cast<int>(native) << std::endl;
     }
 }
 

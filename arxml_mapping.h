@@ -24,6 +24,8 @@ const std::string kSignal_tagname = "I-SIGNAL";
 const std::string kSignal_length_tagname = "LENGTH";
 const std::string kSignal_data_type_tagname = "BASE-TYPE-REF";
 const std::string kSignal_byte_order_tagname = "PACKING-BYTE-ORDER";
+const std::string kBase_type_tagname = "SW-BASE-TYPE";
+const std::string kNative_type_name_tagname = "NATIVE-DECLARATION";
 
 struct HashPair
 {
@@ -47,25 +49,26 @@ public:
     using signal_offset_pair = std::pair<std::string, int>;
     using pdu_signal_pair = std::pair<std::string, std::string>;
 
-    friend void get_pcap_data(const ArxmlMapping &arxml_mapping_instance);
-    friend char* get_signal_data(std::string pdu_name, std::string signal_name, const ArxmlMapping &arxml_mapping_instance);
+    friend void get_signal_data(std::string pdu_name, std::string signal_name, const ArxmlMapping &arxml_mapping_instance);
 
     // 生成包含了 PDU与 Signal信息的各个 map
     bool GenerateMap(const tinyxml2::XMLElement* element);
     // 打印 std::map<int, std::string> id_to_pdu_map_
     void PrintIdToPduMap() const;
-    // 打印 std::map<std::string, std::vector<signal_pair>> signal_to_pdu_map
+    // 打印 std::map<std::string, std::vector<signal_pair>> signal_to_pdu_map_
     void PrintSignalToPduMap() const;
     // 打印 std::unordered_map<pdu_signal_pair, int, HashPair> signal_index_in_pdu_map_
     void PrintSignalIndexInPduMap() const;
     // 打印 std::map<std::string, int> signal_to_length_map_
     void PrintSignalToLengthMap() const;
-    // 打印 std::unordered_map<std::string, BaseType> signal_to_type_map_
-    void PrintSignalToTypeMap() const;
+    // 打印 std::unordered_map<std::string, BaseType> signal_to_base_type_map_
+    void PrintSignalToBaseTypeMap() const;
+    // 打印 std::unordered_map<std::string, std::string> base_type_to_native_map_
+    void PrintBaseTypeToNativeMap() const;
     // 打印 std::unordered_map<std::string, PackingByteOrder> signal_to_byte_order_map_
     void PrintSignalToByteOrderMap() const;
 
-private:
+public:
     // 根据 HEADER-ID取 pdu名
     std::unordered_map<int, std::string> id_to_pdu_map_;
     // 根据 pdu名取 (signal名，signal偏移量)数组
@@ -74,8 +77,10 @@ private:
     std::unordered_map<pdu_signal_pair, int, HashPair> signal_index_in_pdu_map_;
     // 根据 signal名取 length
     std::unordered_map<std::string, int> signal_to_length_map_;
-    // 根据 signal名取数据类型枚举值
-    std::unordered_map<std::string, BaseType> signal_to_type_map_;
+    // 根据 signal名取 SW-BASE-TYPE名
+    std::unordered_map<std::string, std::string> signal_to_base_type_map_;
+    // 根据 SW-BASE-TYPE名取数据类型枚举值
+    std::unordered_map<std::string, NativeType> base_type_to_native_map_;     // 原 signal_to_type_map_
     // 根据 signal名取字节序枚举值
     std::unordered_map<std::string, PackingByteOrder> signal_to_byte_order_map_;
 };

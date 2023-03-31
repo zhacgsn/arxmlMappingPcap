@@ -44,7 +44,7 @@ set_target_properties(
 )
 
 if (tinyxml2_BUILD_TESTING)
-    add_executable(xmltest xmltest.cpp)
+    add_executable(xmltest xmltest.cpp arxml_mapping.cc PDUBuffer.cc)
     target_link_libraries(xmltest PRIVATE tinyxml2::tinyxml2)
 
     add_test(
