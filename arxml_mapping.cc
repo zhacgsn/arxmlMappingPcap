@@ -31,7 +31,7 @@ bool ArxmlMapping::GenerateMap(const tinyxml2::XMLElement* element)
     bool signal_set = false;
     bool offset_set = false;
     
-    int pdu_id;
+    long long pdu_id;
     std::string pdu_ref_name;
     std::string pdu_name;
     std::string signal_name;
@@ -57,18 +57,23 @@ bool ArxmlMapping::GenerateMap(const tinyxml2::XMLElement* element)
             {
                 // std::cout << "HEADER-ID: " << tempElement->GetText() << std::endl;
                 pdu_id_count = count;
-                pdu_id = atoi(tempElement->GetText());
+                pdu_id = atoll(tempElement->GetText());
             }
             // 处理 PDU-TRIGGERING-REF，从路径取出 PDU名
             if (count == pdu_id_count && tempElement->Name() == kPdu_ref_tagname)
             {
                 // std::cout << "PDU-TRIGGERING-REF: " << tempElement->GetText() << std::endl;
                 pdu_ref_name = tempElement->GetText();
-                // int pos = pdu_ref_name.find_last_of('_') + 1;
-                int pos = pdu_ref_name.find(pdu_ref_prefix);
-                pdu_ref_name = pdu_ref_name.substr(pos + pdu_ref_prefix.size());
-                // std::cout << "HEADER-ID " << pdu_id << "---->PDU: " << pdu_ref_name << std::endl;
+                int pos = pdu_ref_name.find_last_of('/');
+                pdu_ref_name = pdu_ref_name.substr(pos + 1);
+                
+                if (pdu_ref_name.find(pdu_ref_prefix) != std::string::npos)
+                {
+                    pos = pdu_ref_name.find(pdu_ref_prefix);
+                    pdu_ref_name = pdu_ref_name.substr(pos + pdu_ref_prefix.size());
+                }
                 id_to_pdu_map_.emplace(pdu_id, pdu_ref_name);
+                // std::cout << "HEADER-ID " << pdu_id << "---->PDU: " << pdu_ref_name << std::endl;
             }
             // 遍历到 pdu标签名，记录此时层级 count
             if (tempElement->Name() == kPdu_tagname1 || tempElement->Name() == kPdu_tagname2)

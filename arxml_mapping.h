@@ -70,7 +70,7 @@ public:
 
 public:
     // 根据 HEADER-ID取 pdu名
-    std::unordered_map<int, std::string> id_to_pdu_map_;
+    std::unordered_map<long long, std::string> id_to_pdu_map_;
     // 根据 pdu名取 (signal名，signal偏移量)数组
     std::map<std::string, std::vector<signal_offset_pair>> signal_to_pdu_map_;
     // 根据 (pdu名, signal名)取 signal编号，从 1开始
