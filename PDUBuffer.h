@@ -32,4 +32,4 @@ private:
     size_t size_;
     size_t writeIndex_;
 
-// };
+};
