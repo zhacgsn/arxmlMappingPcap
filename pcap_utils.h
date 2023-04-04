@@ -67,7 +67,7 @@ void get_pcap_data(const ArxmlMapping &arxml_mapping_instance, const std::string
             uint32_t net_id;
             fread(&net_id, sizeof(uint32_t), 1, fp);
 
-            uint32_t id = htonl(net_id);
+            long long id = htonl(net_id);
             len -= sizeof(uint32_t);
 
             uint32_t net_pdu_len;
@@ -80,7 +80,6 @@ void get_pcap_data(const ArxmlMapping &arxml_mapping_instance, const std::string
             fread(buffer.get_next_write_address(pdu_len), 1, pdu_len, fp);
             buffer.update_write_index(pdu_len);
             len -= pdu_len;
-
             std::string name = arxml_mapping_instance.id_to_pdu_map_.at(id);
             std::map<std::string, int> mp;
             mp[name] = start_write_index;
