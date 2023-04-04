@@ -24,7 +24,7 @@ Build and run
 ```shell
 $ git clone https://github.com/zhacgsn/arxmlMappingPcap
 
-$ cd build
+$ mkdir build && cd build
 
 $ cmake ..
 
@@ -33,6 +33,10 @@ $ make
 $ ./xmltest
 ```
 
+其中，pcap_utils.h定义了报文结构，并通过 get_pcap_data 函数进行将报文进行解析，并将siganl数据存入PDUbuffer中
+PDUBuffer.h 定义了 存储数据的一个缓冲区，定义了buffer的相关操作
+arxml_mapping.cc 定义了 一些解析得到的映射关系
+xmltest.cc 为启动的测试文件
 ### Some results
 
 id_to_pdu_map（HEADER-ID到PDU名的映射）: 
