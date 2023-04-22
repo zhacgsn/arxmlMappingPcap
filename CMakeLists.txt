@@ -23,10 +23,17 @@ set(CMAKE_CXX_STANDARD 17)
 
 add_library(tinyxml2 tinyxml2.cpp tinyxml2.h)
 add_library(tinyxml2::tinyxml2 ALIAS tinyxml2)
+file(GLOB_RECURSE DSFSignalTree "DSFSignalTree/*.cpp" "DSFSignalTree/*.h")
+file(GLOB_RECURSE DSFCommon "DSFCommon/*.cpp" "DSFCommon/*.h")
+add_library(dsf_signal_tree ${DSFSignalTree})
+add_library(dsf_common ${DSFCommon})
 
 # Uncomment the following line to require C++11 (or greater) to use tinyxml2
 # target_compile_features(tinyxml2 PUBLIC cxx_std_11)
-target_include_directories(tinyxml2 PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>")
+# target_include_directories(tinyxml2 PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>")
+target_include_directories(tinyxml2 PUBLIC "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}>"
+                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/DSFSignalTree>"
+                            "$<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/DSFCommon>")
 
 target_compile_definitions(
     tinyxml2
@@ -45,7 +52,7 @@ set_target_properties(
 
 if (tinyxml2_BUILD_TESTING)
     add_executable(xmltest xmltest.cpp arxml_mapping.cc PDUBuffer.cc)
-    target_link_libraries(xmltest PRIVATE tinyxml2::tinyxml2)
+    target_link_libraries(xmltest PRIVATE tinyxml2::tinyxml2 dsf_signal_tree dsf_common)
 
     add_test(
         NAME xmltest

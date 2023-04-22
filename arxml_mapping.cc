@@ -1,6 +1,14 @@
 #include "tinyxml2.h"
 #include "PDUStruct.h"
 #include "arxml_mapping.h"
+#include "DSFSignalTree/abstractnode.h"
+#include "DSFSignalTree/signaliterator.h"
+#include "DSFSignalTree/signalmetadata.h"
+#include "DSFSignalTree/document.h"
+#include "DSFSignalTree/nodereference.h"
+#include "DSFSignalTree/signalvalue.h"
+#include "DSFCommon/dsfcommon.h"
+#include "DSFCommon/dsftime.h"
 
 #include <iostream>
 #include <vector>
@@ -8,9 +16,10 @@
 #include <map>
 #include <unordered_map>
 #include <stack>
+#include <typeinfo>
 
 // 深度优先
-bool ArxmlMapping::GenerateMap(const tinyxml2::XMLElement* element)
+bool dsf::ArxmlMapping::GenerateMap(const tinyxml2::XMLElement* element)
 {
     std::stack<const tinyxml2::XMLElement*> elementStack;
     const tinyxml2::XMLElement* tempElement = element;
@@ -194,67 +203,67 @@ bool ArxmlMapping::GenerateMap(const tinyxml2::XMLElement* element)
                 // 插入 Signal名与类型枚举值映射
                 if (native_name == "A_UINT8")
                 {
-                    NativeType type = NativeType::A_UNSIGNED_CHAR;
+                    dsf::DataType type = dsf::DataType::DSF_UINT8;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 else if (native_name == "A_UINT16")
                 {
-                    NativeType type = NativeType::A_UNSIGNED_SHORT;
+                    dsf::DataType type = dsf::DataType::DSF_UINT16;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 else if (native_name == "A_UINT32")
                 {
-                    NativeType type = NativeType::A_UNSIGNED_LONG;
+                    dsf::DataType type = dsf::DataType::DSF_UINT32;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 else if (native_name == "boolean")
                 {
-                    NativeType type = NativeType::A_UNSIGNED_CHAR;
+                    dsf::DataType type = dsf::DataType::DSF_BOOLEAN;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 else if (native_name == "float32")
                 {
-                    NativeType type = NativeType::A_FLOAT;
+                    dsf::DataType type = dsf::DataType::DSF_FLOAT32;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 else if (native_name == "float64")
                 {
-                    NativeType type = NativeType::A_DOUBLE;
+                    dsf::DataType type = dsf::DataType::DSF_FLOAT64;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 else if (native_name == "sint8")
                 {
-                    NativeType type = NativeType::A_SIGNED_CHAR;
+                    dsf::DataType type = dsf::DataType::DSF_INT8;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 else if (native_name == "sint16")
                 {
-                    NativeType type = NativeType::A_SIGNED_SHORT;
+                    dsf::DataType type = dsf::DataType::DSF_INT16;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 else if (native_name == "sint32")
                 {
-                    NativeType type = NativeType::A_SIGNED_LONG;
+                    dsf::DataType type = dsf::DataType::DSF_INT32;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 else if (native_name == "uint8")
                 {
-                    NativeType type = NativeType::A_UNSIGNED_CHAR;
+                    dsf::DataType type = dsf::DataType::DSF_UINT8;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 else if (native_name == "uint16")
                 {
-                    NativeType type = NativeType::A_UNSIGNED_SHORT;
+                    dsf::DataType type = dsf::DataType::DSF_UINT16;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 else if (native_name == "uint32")
                 {
-                    NativeType type = NativeType::A_UNSIGNED_LONG;
+                    dsf::DataType type = dsf::DataType::DSF_UINT32;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 else if (native_name == "uint64")
                 {
-                    NativeType type = NativeType::A_UNSIGNED_LONG_LONG;
+                    dsf::DataType type = dsf::DataType::DSF_UINT64;
                     base_type_to_native_map_.emplace(base_type_name, type);
                 }
                 // std::cout << "signal: " << real_signal_name2 << " data type: " << data_type_name << " enum BaseType: " << static_cast<int>(base_type_to_native_map_.at(data_type_name)) << std::endl;
@@ -275,7 +284,7 @@ bool ArxmlMapping::GenerateMap(const tinyxml2::XMLElement* element)
 }
 
 // 打印 std::map<int, std::string> id_to_pdu_map
-void ArxmlMapping::PrintIdToPduMap() const
+void dsf::ArxmlMapping::PrintIdToPduMap() const
 {
     std::cout << "id_to_pdu_map: " << std::endl;
     for (const auto &[id, pdu] : id_to_pdu_map_)
@@ -285,7 +294,7 @@ void ArxmlMapping::PrintIdToPduMap() const
 }
 
 // 打印 std::map<std::string, std::vector<signal_pair>> signal_to_pdu_map
-void ArxmlMapping::PrintSignalToPduMap() const
+void dsf::ArxmlMapping::PrintSignalToPduMap() const
 {
     std::cout << "signal_to_pdu_map: " << std::endl;
     for (const auto &it : signal_to_pdu_map_)
@@ -300,7 +309,7 @@ void ArxmlMapping::PrintSignalToPduMap() const
 }
 
 // 打印 std::unordered_map<pdu_signal_pair, int, HashPair> signal_index_in_pdu_map;
-void ArxmlMapping::PrintSignalIndexInPduMap() const
+void dsf::ArxmlMapping::PrintSignalIndexInPduMap() const
 {
     std::cout << "signal_index_in_pdu_map: " << std::endl;
     for (const auto &it : signal_index_in_pdu_map_)
@@ -310,7 +319,7 @@ void ArxmlMapping::PrintSignalIndexInPduMap() const
 }
 
 // 打印 std::map<std::string, int> signal_to_length_map
-void ArxmlMapping::PrintSignalToLengthMap() const
+void dsf::ArxmlMapping::PrintSignalToLengthMap() const
 {
     std::cout << "signal_to_length_map: " << std::endl;
     for (const auto &[signal, length] : signal_to_length_map_)
@@ -320,7 +329,7 @@ void ArxmlMapping::PrintSignalToLengthMap() const
 }
 
 // 打印 std::unordered_map<std::string, BaseType> signal_to_type_map
-void ArxmlMapping::PrintSignalToBaseTypeMap() const
+void dsf::ArxmlMapping::PrintSignalToBaseTypeMap() const
 {
     std::cout << "signal_to_base_type_map_: " << std::endl;
     for (const auto &[signal, base_type] : signal_to_base_type_map_)
@@ -330,7 +339,7 @@ void ArxmlMapping::PrintSignalToBaseTypeMap() const
 }
 
 // 打印 std::unordered_map<std::string, std::string> base_type_to_native_map_
-void ArxmlMapping::PrintBaseTypeToNativeMap() const
+void dsf::ArxmlMapping::PrintBaseTypeToNativeMap() const
 {
     std::cout << "base_type_to_native_map_: " << std::endl;
     for (const auto &[base_type, native] : base_type_to_native_map_)
@@ -340,11 +349,68 @@ void ArxmlMapping::PrintBaseTypeToNativeMap() const
 }
 
 // 打印 std::unordered_map<std::string, PackingByteOrder> signal_to_byte_order_map
-void ArxmlMapping::PrintSignalToByteOrderMap() const
+void dsf::ArxmlMapping::PrintSignalToByteOrderMap() const
 {
     std::cout << "signal_to_byte_order_map: " << std::endl;
     for (const auto &[signal, byte_order] : signal_to_byte_order_map_)
     {
         std::cout << "Signal " << signal << "'s PackingByteOrder is " << static_cast<int>(byte_order) << std::endl;
+    }
+}
+
+bool dsf::ArxmlMapping::load(const std::string &file)
+{
+    doc_.LoadFile(file.c_str());
+    tinyxml2::XMLElement *root_element = doc_.FirstChildElement();
+    GenerateMap(root_element);
+    for (const auto &[pdu_id, pdu_name] : id_to_pdu_map_)
+    {
+        SignalNode* pdu_node = createStruct(std::to_string(pdu_id));
+        pdu_node->setParam("name", pdu_name);
+	    // 做 this->m_children.insert({ pdu_id, pdu_node });
+        nodeAdd(this, pdu_node);
+        std::vector<signal_offset_pair> vec;
+        // 在 ARXML文件里，有 id到PDU的关系时，未必有该 PDU到 Signal的关系
+        try
+        {
+            vec = signal_to_pdu_map_.at(pdu_name);
+        }
+        catch(const std::exception& e)
+        {
+            std::cerr << e.what() << '\n';
+        }
+        for (const auto &[signal_name, signal_offset] : vec)
+        {
+            // 设置 Signal描述信息
+            dsf::SignalValueParam signal_param;
+            std::string base_type = signal_to_base_type_map_[signal_name];
+            dsf::DataType signal_type = base_type_to_native_map_[base_type];
+            signal_param.offset = signal_offset;
+            signal_param.type = signal_type;
+            // 无枚举信息，sigEnum取空
+            std::map<int, std::string> sigEnum;
+            dsf::SignalValue* signal_node = createValue(signal_name, signal_param, sigEnum);
+	        // 做 pdu_node->m_children.insert({ signal_name, signal_node });
+            nodeAdd(pdu_node, signal_node);
+        }
+    }
+    return true;
+}
+
+void dsf::ArxmlMapping::PrintSignalTree() const
+{
+    std::cout << "Print Signal Tree: " << std::endl;
+    std::cout << "-------------------------------------------------------------------------- " << std::endl;
+    // 不能通过 m_children遍历
+    for (auto it = this->begin(); it != this->end(); ++it)
+    {
+        SignalNode* pdu_node = it.signal();
+        std::cout << "PDU id: " << it.name()<< "  Name: " << pdu_node->getParam("name") << std::endl;
+        for (auto signal_it = pdu_node->begin(); signal_it != pdu_node->end(); ++signal_it)
+        {
+            std::cout << "\tSignal Name: " << signal_it.name() << std::endl;
+            std::cout << "\tSignal Type: " << dynamic_cast<SignalValue*>(signal_it.signal())->type() << std::endl;
+            std::cout << "\tSignal Offset: " << dynamic_cast<SignalValue*>(signal_it.signal())->offset() << std::endl;
+        }
     }
 }

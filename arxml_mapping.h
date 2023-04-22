@@ -3,9 +3,18 @@
 
 #include "tinyxml2.h"
 #include "PDUStruct.h"
+#include "DSFSignalTree/abstractnode.h"
+#include "DSFSignalTree/signaliterator.h"
+#include "DSFSignalTree/signalmetadata.h"
+#include "DSFSignalTree/document.h"
+#include "DSFSignalTree/nodereference.h"
+#include "DSFSignalTree/signalvalue.h"
+#include "DSFCommon/dsfcommon.h"
+#include "DSFCommon/dsftime.h"
 
 #include <iostream>
 #include <string>
+#include <vector>
 #include <map>
 #include <unordered_map>
 
@@ -43,7 +52,9 @@ struct HashPair
     }
 };
 
-class ArxmlMapping
+namespace dsf
+{
+class ArxmlMapping : public Document
 {
 public:
     using signal_offset_pair = std::pair<std::string, int>;
@@ -67,8 +78,14 @@ public:
     void PrintBaseTypeToNativeMap() const;
     // 打印 std::unordered_map<std::string, PackingByteOrder> signal_to_byte_order_map_
     void PrintSignalToByteOrderMap() const;
+    // 解析文件,生成信号树
+    virtual bool load(const std::string &file);
+    // 打印信号树
+    void PrintSignalTree() const;
 
 public:
+    tinyxml2::XMLDocument doc_;
+    // PDU名和 Signal名都从引用路径中取出，未必和 SHORT-NAME相同
     // 根据 HEADER-ID取 pdu名
     std::unordered_map<long long, std::string> id_to_pdu_map_;
     // 根据 pdu名取 (signal名，signal偏移量)数组
@@ -80,9 +97,10 @@ public:
     // 根据 signal名取 SW-BASE-TYPE名
     std::unordered_map<std::string, std::string> signal_to_base_type_map_;
     // 根据 SW-BASE-TYPE名取数据类型枚举值
-    std::unordered_map<std::string, NativeType> base_type_to_native_map_;     // 原 signal_to_type_map_
+    std::unordered_map<std::string, dsf::DataType> base_type_to_native_map_;     // 原 signal_to_type_map_
     // 根据 signal名取字节序枚举值
     std::unordered_map<std::string, PackingByteOrder> signal_to_byte_order_map_;
 };
+}  // namespace dsf
 
 #endif 

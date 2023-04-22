@@ -1,0 +1,2 @@
+/Library/Developer/CommandLineTools/usr/bin/ar qc libdsf_common.a CMakeFiles/dsf_common.dir/DSFCommon/dsftime.cpp.o
+/Library/Developer/CommandLineTools/usr/bin/ranlib libdsf_common.a
