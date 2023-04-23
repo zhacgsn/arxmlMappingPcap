@@ -83,19 +83,19 @@ CMakeFiles/xmltest.dir/xmltest.cpp.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/xmltest.dir/xmltest.cpp.s"
 	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zhacgsn/VSProjects/arxml-mapping-pcap/xmltest.cpp -o CMakeFiles/xmltest.dir/xmltest.cpp.s
 
-CMakeFiles/xmltest.dir/arxml_mapping.cc.o: CMakeFiles/xmltest.dir/flags.make
-CMakeFiles/xmltest.dir/arxml_mapping.cc.o: /Users/zhacgsn/VSProjects/arxml-mapping-pcap/arxml_mapping.cc
-CMakeFiles/xmltest.dir/arxml_mapping.cc.o: CMakeFiles/xmltest.dir/compiler_depend.ts
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/zhacgsn/VSProjects/arxml-mapping-pcap/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/xmltest.dir/arxml_mapping.cc.o"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/xmltest.dir/arxml_mapping.cc.o -MF CMakeFiles/xmltest.dir/arxml_mapping.cc.o.d -o CMakeFiles/xmltest.dir/arxml_mapping.cc.o -c /Users/zhacgsn/VSProjects/arxml-mapping-pcap/arxml_mapping.cc
+CMakeFiles/xmltest.dir/ARXMLDocument.cc.o: CMakeFiles/xmltest.dir/flags.make
+CMakeFiles/xmltest.dir/ARXMLDocument.cc.o: /Users/zhacgsn/VSProjects/arxml-mapping-pcap/ARXMLDocument.cc
+CMakeFiles/xmltest.dir/ARXMLDocument.cc.o: CMakeFiles/xmltest.dir/compiler_depend.ts
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/Users/zhacgsn/VSProjects/arxml-mapping-pcap/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_2) "Building CXX object CMakeFiles/xmltest.dir/ARXMLDocument.cc.o"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -MD -MT CMakeFiles/xmltest.dir/ARXMLDocument.cc.o -MF CMakeFiles/xmltest.dir/ARXMLDocument.cc.o.d -o CMakeFiles/xmltest.dir/ARXMLDocument.cc.o -c /Users/zhacgsn/VSProjects/arxml-mapping-pcap/ARXMLDocument.cc
 
-CMakeFiles/xmltest.dir/arxml_mapping.cc.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/xmltest.dir/arxml_mapping.cc.i"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/zhacgsn/VSProjects/arxml-mapping-pcap/arxml_mapping.cc > CMakeFiles/xmltest.dir/arxml_mapping.cc.i
+CMakeFiles/xmltest.dir/ARXMLDocument.cc.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/xmltest.dir/ARXMLDocument.cc.i"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /Users/zhacgsn/VSProjects/arxml-mapping-pcap/ARXMLDocument.cc > CMakeFiles/xmltest.dir/ARXMLDocument.cc.i
 
-CMakeFiles/xmltest.dir/arxml_mapping.cc.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/xmltest.dir/arxml_mapping.cc.s"
-	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zhacgsn/VSProjects/arxml-mapping-pcap/arxml_mapping.cc -o CMakeFiles/xmltest.dir/arxml_mapping.cc.s
+CMakeFiles/xmltest.dir/ARXMLDocument.cc.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/xmltest.dir/ARXMLDocument.cc.s"
+	/Library/Developer/CommandLineTools/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /Users/zhacgsn/VSProjects/arxml-mapping-pcap/ARXMLDocument.cc -o CMakeFiles/xmltest.dir/ARXMLDocument.cc.s
 
 CMakeFiles/xmltest.dir/PDUBuffer.cc.o: CMakeFiles/xmltest.dir/flags.make
 CMakeFiles/xmltest.dir/PDUBuffer.cc.o: /Users/zhacgsn/VSProjects/arxml-mapping-pcap/PDUBuffer.cc
@@ -114,14 +114,14 @@ CMakeFiles/xmltest.dir/PDUBuffer.cc.s: cmake_force
 # Object files for target xmltest
 xmltest_OBJECTS = \
 "CMakeFiles/xmltest.dir/xmltest.cpp.o" \
-"CMakeFiles/xmltest.dir/arxml_mapping.cc.o" \
+"CMakeFiles/xmltest.dir/ARXMLDocument.cc.o" \
 "CMakeFiles/xmltest.dir/PDUBuffer.cc.o"
 
 # External object files for target xmltest
 xmltest_EXTERNAL_OBJECTS =
 
 xmltest: CMakeFiles/xmltest.dir/xmltest.cpp.o
-xmltest: CMakeFiles/xmltest.dir/arxml_mapping.cc.o
+xmltest: CMakeFiles/xmltest.dir/ARXMLDocument.cc.o
 xmltest: CMakeFiles/xmltest.dir/PDUBuffer.cc.o
 xmltest: CMakeFiles/xmltest.dir/build.make
 xmltest: libtinyxml2.a

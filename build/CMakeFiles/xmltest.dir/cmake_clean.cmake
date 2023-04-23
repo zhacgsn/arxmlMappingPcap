@@ -1,8 +1,8 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/xmltest.dir/ARXMLDocument.cc.o"
+  "CMakeFiles/xmltest.dir/ARXMLDocument.cc.o.d"
   "CMakeFiles/xmltest.dir/PDUBuffer.cc.o"
   "CMakeFiles/xmltest.dir/PDUBuffer.cc.o.d"
-  "CMakeFiles/xmltest.dir/arxml_mapping.cc.o"
-  "CMakeFiles/xmltest.dir/arxml_mapping.cc.o.d"
   "CMakeFiles/xmltest.dir/xmltest.cpp.o"
   "CMakeFiles/xmltest.dir/xmltest.cpp.o.d"
   "xmltest"

@@ -5,7 +5,7 @@
 #endif
 
 #include "tinyxml2.h"
-#include "arxml_mapping.h"
+#include "ARXMLDocument.h"
 #include "pcap_utils.h"
 #include "PDUStruct.h"
 

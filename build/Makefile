@@ -587,6 +587,30 @@ xmltest/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/xmltest.dir/build.make CMakeFiles/xmltest.dir/build
 .PHONY : xmltest/fast
 
+ARXMLDocument.o: ARXMLDocument.cc.o
+.PHONY : ARXMLDocument.o
+
+# target to build an object file
+ARXMLDocument.cc.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/xmltest.dir/build.make CMakeFiles/xmltest.dir/ARXMLDocument.cc.o
+.PHONY : ARXMLDocument.cc.o
+
+ARXMLDocument.i: ARXMLDocument.cc.i
+.PHONY : ARXMLDocument.i
+
+# target to preprocess a source file
+ARXMLDocument.cc.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/xmltest.dir/build.make CMakeFiles/xmltest.dir/ARXMLDocument.cc.i
+.PHONY : ARXMLDocument.cc.i
+
+ARXMLDocument.s: ARXMLDocument.cc.s
+.PHONY : ARXMLDocument.s
+
+# target to generate assembly for a file
+ARXMLDocument.cc.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/xmltest.dir/build.make CMakeFiles/xmltest.dir/ARXMLDocument.cc.s
+.PHONY : ARXMLDocument.cc.s
+
 DSFCommon/dsftime.o: DSFCommon/dsftime.cpp.o
 .PHONY : DSFCommon/dsftime.o
 
@@ -803,30 +827,6 @@ PDUBuffer.cc.s:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/xmltest.dir/build.make CMakeFiles/xmltest.dir/PDUBuffer.cc.s
 .PHONY : PDUBuffer.cc.s
 
-arxml_mapping.o: arxml_mapping.cc.o
-.PHONY : arxml_mapping.o
-
-# target to build an object file
-arxml_mapping.cc.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/xmltest.dir/build.make CMakeFiles/xmltest.dir/arxml_mapping.cc.o
-.PHONY : arxml_mapping.cc.o
-
-arxml_mapping.i: arxml_mapping.cc.i
-.PHONY : arxml_mapping.i
-
-# target to preprocess a source file
-arxml_mapping.cc.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/xmltest.dir/build.make CMakeFiles/xmltest.dir/arxml_mapping.cc.i
-.PHONY : arxml_mapping.cc.i
-
-arxml_mapping.s: arxml_mapping.cc.s
-.PHONY : arxml_mapping.s
-
-# target to generate assembly for a file
-arxml_mapping.cc.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/xmltest.dir/build.make CMakeFiles/xmltest.dir/arxml_mapping.cc.s
-.PHONY : arxml_mapping.cc.s
-
 tinyxml2.o: tinyxml2.cpp.o
 .PHONY : tinyxml2.o
 
@@ -920,6 +920,9 @@ help:
 	@echo "... dsf_signal_tree"
 	@echo "... tinyxml2"
 	@echo "... xmltest"
+	@echo "... ARXMLDocument.o"
+	@echo "... ARXMLDocument.i"
+	@echo "... ARXMLDocument.s"
 	@echo "... DSFCommon/dsftime.o"
 	@echo "... DSFCommon/dsftime.i"
 	@echo "... DSFCommon/dsftime.s"
@@ -947,9 +950,6 @@ help:
 	@echo "... PDUBuffer.o"
 	@echo "... PDUBuffer.i"
 	@echo "... PDUBuffer.s"
-	@echo "... arxml_mapping.o"
-	@echo "... arxml_mapping.i"
-	@echo "... arxml_mapping.s"
 	@echo "... tinyxml2.o"
 	@echo "... tinyxml2.i"
 	@echo "... tinyxml2.s"
