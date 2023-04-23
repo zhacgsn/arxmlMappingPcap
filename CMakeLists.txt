@@ -51,7 +51,7 @@ set_target_properties(
 )
 
 if (tinyxml2_BUILD_TESTING)
-    add_executable(xmltest xmltest.cpp ARXMLDocument.cc PDUBuffer.cc)
+    add_executable(xmltest xmltest.cpp ARXMLDocument.cc) 
     target_link_libraries(xmltest PRIVATE tinyxml2::tinyxml2 dsf_signal_tree dsf_common)
 
     add_test(
