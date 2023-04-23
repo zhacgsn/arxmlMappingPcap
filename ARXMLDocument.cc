@@ -387,6 +387,16 @@ bool dsf::ArxmlDocument::load(const std::string &file)
             dsf::DataType signal_type = base_type_to_native_map_[base_type];
             signal_param.offset = signal_offset;
             signal_param.type = signal_type;
+            // SignalValueParam.max解释为 Signal长度 length
+            try
+            {
+                signal_param.max = signal_to_length_map_.at(signal_name);
+            }
+            catch(const std::exception& e)
+            {
+                std::cerr << e.what() << '\n';
+            }
+            
             // 无枚举信息，sigEnum取空
             std::map<int, std::string> sigEnum;
             dsf::SignalValue* signal_node = createValue(signal_name, signal_param, sigEnum);
@@ -409,8 +419,10 @@ void dsf::ArxmlDocument::PrintSignalTree() const
         for (auto signal_it = pdu_node->begin(); signal_it != pdu_node->end(); ++signal_it)
         {
             std::cout << "\tSignal Name: " << signal_it.name() << std::endl;
-            std::cout << "\tSignal Type: " << dynamic_cast<SignalValue*>(signal_it.signal())->type() << std::endl;
-            std::cout << "\tSignal Offset: " << dynamic_cast<SignalValue*>(signal_it.signal())->offset() << std::endl;
+            SignalValue* signal_node = dynamic_cast<SignalValue*>(signal_it.signal());
+            std::cout << "\tSignal Type: " << signal_node->type() << std::endl;
+            std::cout << "\tSignal Offset: " << signal_node->offset() << std::endl;
+            std::cout << "\tSignal Length: " << signal_node->max() << std::endl;
         }
     }
 }
