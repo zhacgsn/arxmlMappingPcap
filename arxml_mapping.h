@@ -54,13 +54,13 @@ struct HashPair
 
 namespace dsf
 {
-class ArxmlMapping : public Document
+class ArxmlDocument : public Document
 {
 public:
     using signal_offset_pair = std::pair<std::string, int>;
     using pdu_signal_pair = std::pair<std::string, std::string>;
 
-    friend void get_signal_data(std::string pdu_name, std::string signal_name, const ArxmlMapping &arxml_mapping_instance);
+    friend void get_signal_data(std::string pdu_name, std::string signal_name, const ArxmlDocument &arxml_mapping_instance);
 
     // 生成包含了 PDU与 Signal信息的各个 map
     bool GenerateMap(const tinyxml2::XMLElement* element);

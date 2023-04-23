@@ -19,7 +19,7 @@
 #include <typeinfo>
 
 // 深度优先
-bool dsf::ArxmlMapping::GenerateMap(const tinyxml2::XMLElement* element)
+bool dsf::ArxmlDocument::GenerateMap(const tinyxml2::XMLElement* element)
 {
     std::stack<const tinyxml2::XMLElement*> elementStack;
     const tinyxml2::XMLElement* tempElement = element;
@@ -284,7 +284,7 @@ bool dsf::ArxmlMapping::GenerateMap(const tinyxml2::XMLElement* element)
 }
 
 // 打印 std::map<int, std::string> id_to_pdu_map
-void dsf::ArxmlMapping::PrintIdToPduMap() const
+void dsf::ArxmlDocument::PrintIdToPduMap() const
 {
     std::cout << "id_to_pdu_map: " << std::endl;
     for (const auto &[id, pdu] : id_to_pdu_map_)
@@ -294,7 +294,7 @@ void dsf::ArxmlMapping::PrintIdToPduMap() const
 }
 
 // 打印 std::map<std::string, std::vector<signal_pair>> signal_to_pdu_map
-void dsf::ArxmlMapping::PrintSignalToPduMap() const
+void dsf::ArxmlDocument::PrintSignalToPduMap() const
 {
     std::cout << "signal_to_pdu_map: " << std::endl;
     for (const auto &it : signal_to_pdu_map_)
@@ -309,7 +309,7 @@ void dsf::ArxmlMapping::PrintSignalToPduMap() const
 }
 
 // 打印 std::unordered_map<pdu_signal_pair, int, HashPair> signal_index_in_pdu_map;
-void dsf::ArxmlMapping::PrintSignalIndexInPduMap() const
+void dsf::ArxmlDocument::PrintSignalIndexInPduMap() const
 {
     std::cout << "signal_index_in_pdu_map: " << std::endl;
     for (const auto &it : signal_index_in_pdu_map_)
@@ -319,7 +319,7 @@ void dsf::ArxmlMapping::PrintSignalIndexInPduMap() const
 }
 
 // 打印 std::map<std::string, int> signal_to_length_map
-void dsf::ArxmlMapping::PrintSignalToLengthMap() const
+void dsf::ArxmlDocument::PrintSignalToLengthMap() const
 {
     std::cout << "signal_to_length_map: " << std::endl;
     for (const auto &[signal, length] : signal_to_length_map_)
@@ -329,7 +329,7 @@ void dsf::ArxmlMapping::PrintSignalToLengthMap() const
 }
 
 // 打印 std::unordered_map<std::string, BaseType> signal_to_type_map
-void dsf::ArxmlMapping::PrintSignalToBaseTypeMap() const
+void dsf::ArxmlDocument::PrintSignalToBaseTypeMap() const
 {
     std::cout << "signal_to_base_type_map_: " << std::endl;
     for (const auto &[signal, base_type] : signal_to_base_type_map_)
@@ -339,7 +339,7 @@ void dsf::ArxmlMapping::PrintSignalToBaseTypeMap() const
 }
 
 // 打印 std::unordered_map<std::string, std::string> base_type_to_native_map_
-void dsf::ArxmlMapping::PrintBaseTypeToNativeMap() const
+void dsf::ArxmlDocument::PrintBaseTypeToNativeMap() const
 {
     std::cout << "base_type_to_native_map_: " << std::endl;
     for (const auto &[base_type, native] : base_type_to_native_map_)
@@ -349,7 +349,7 @@ void dsf::ArxmlMapping::PrintBaseTypeToNativeMap() const
 }
 
 // 打印 std::unordered_map<std::string, PackingByteOrder> signal_to_byte_order_map
-void dsf::ArxmlMapping::PrintSignalToByteOrderMap() const
+void dsf::ArxmlDocument::PrintSignalToByteOrderMap() const
 {
     std::cout << "signal_to_byte_order_map: " << std::endl;
     for (const auto &[signal, byte_order] : signal_to_byte_order_map_)
@@ -358,7 +358,7 @@ void dsf::ArxmlMapping::PrintSignalToByteOrderMap() const
     }
 }
 
-bool dsf::ArxmlMapping::load(const std::string &file)
+bool dsf::ArxmlDocument::load(const std::string &file)
 {
     doc_.LoadFile(file.c_str());
     tinyxml2::XMLElement *root_element = doc_.FirstChildElement();
@@ -397,7 +397,7 @@ bool dsf::ArxmlMapping::load(const std::string &file)
     return true;
 }
 
-void dsf::ArxmlMapping::PrintSignalTree() const
+void dsf::ArxmlDocument::PrintSignalTree() const
 {
     std::cout << "Print Signal Tree: " << std::endl;
     std::cout << "-------------------------------------------------------------------------- " << std::endl;

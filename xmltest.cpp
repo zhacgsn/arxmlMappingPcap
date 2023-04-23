@@ -97,7 +97,7 @@ int main()
     // doc.LoadFile("../Network.arxml");
     // doc.LoadFile("../FEEA30.arxml");
 
-    dsf::ArxmlMapping arxml_mapping_instance;
+    dsf::ArxmlDocument arxml_mapping_instance;
     arxml_mapping_instance.load("../Network.arxml");
     // arxml_mapping_instance.load("../FEEA30.arxml");
     arxml_mapping_instance.PrintSignalTree();
