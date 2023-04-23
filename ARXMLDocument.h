@@ -2,7 +2,6 @@
 #define ARXML_MAPPING_H_ 
 
 #include "tinyxml2.h"
-#include "PDUStruct.h"
 #include "DSFSignalTree/abstractnode.h"
 #include "DSFSignalTree/signaliterator.h"
 #include "DSFSignalTree/signalmetadata.h"
@@ -18,10 +17,6 @@
 #include <vector>
 #include <map>
 #include <unordered_map>
-
-
-
-
 
 namespace dsf
 {
@@ -103,231 +98,15 @@ private:
     std::unordered_map<std::string, std::string> signal_to_base_type_map_;
     // 根据 SW-BASE-TYPE名取数据类型枚举值
     std::unordered_map<std::string, dsf::DataType> base_type_to_native_map_;     // 原 signal_to_type_map_
-    // 根据 signal名取字节序枚举值
-    std::unordered_map<std::string, PackingByteOrder> signal_to_byte_order_map_;
 };
  // namespace dsf
 
-class ARXMLMessageRef : public NodeReference
+class ArxmlMessageRef : public NodeReference
 {
 public:
-    ARXMLMessageRef(SignalNode* ori) : NodeReference(ori) {}
-    void update(const char *buf, size_t len, const DSFTime& time)
-    {
-        // 当前索引下标
-        int cur_idx = 0;
+    ArxmlMessageRef(SignalNode* ori) : NodeReference(ori) {}
+    void update(const char *buf, size_t len, const DSFTime& time);
 
-        uint32_t *net_id;
-        net_id = (uint32_t *)&buf[cur_idx];
-        uint32_t id = htonl(*net_id);
-        cur_idx += m_pdu_id_len;
-
-        uint32_t *net_pdu_len;
-        net_pdu_len = (uint32_t *)&buf[cur_idx];
-        uint32_t pdu_len = htonl(*net_pdu_len);
-        cur_idx += m_pdu_length_len;
-        
-        // 找到pdu
-        std::string str_id = std::to_string(id);
-        std::cout << "The pdu id is " << str_id << std::endl;
-        SignalNode *pdu =  m_origin->at(str_id);
-
-        for (auto itr = pdu->begin(); itr != pdu->end(); ++itr) {
-            DataType t = dynamic_cast<SignalValue*>(itr.signal())->type();
-            dsf_scale offset_bit = dynamic_cast<SignalValue*>(itr.signal())->offset();
-        //     switch (t)
-        //     {
-        //     case DSF_UINT8:
-        //         if (offset_bit % 8 == 0 && signal_len == 8)
-        //         {
-        //             uint8_t *tmp_value = (uint8_t*)&buffer_[start_index + offset_bit/8];
-        //             //uint8_t value = htonl(*tmp_value);
-        //             std::cout << "(1)A_UINT8: " << int(*tmp_value)<< std::endl;
-        //             return *tmp_value;
-        //         }
-        //         else if (offset_bit % 8 == 0)
-        //         {
-        //             int left_bit = 8 - signal_len;
-        //             uint8_t *tmp_value = (uint8_t*)&buffer_[start_index + offset_bit/8];
-        //             uint8_t value = *tmp_value >> left_bit;
-        //             std::cout << "(2)A_UINT8: " << (int)value<< std::endl;
-        //             return value;
-        //         }
-        //         else
-        //         {
-        //             uint16_t *tmp_value = (uint16_t*)&buffer_[start_index + offset_bit/8];
-        //             int left_offset = offset_bit % 8;
-        //             int left_bit = 8 - signal_len;
-        //             uint16_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htons(*tmp_value);
-        //             uint8_t value = uint16_t(tmp_v << left_offset) >> (8 + left_bit);
-        //             std::cout << "(3)A_UINT8: " << (uint16_t)value<< std::endl;
-        //             return value;
-        //         }
-        //         break;
-        //     case NativeType::A_SIGNED_CHAR:
-        //         if (offset_bit % 8 == 0 && signal_len == 8)
-        //         {
-        //             int8_t *tmp_value = (int8_t*)&buffer_[start_index + offset_bit/8];
-        //             //uint8_t value = htonl(*tmp_value);
-        //             std::cout << "(1)A_INT8: " << int(*tmp_value)<< std::endl;
-        //             return *tmp_value;
-        //         }
-        //         else if (offset_bit % 8 == 0)
-        //         {
-        //             int left_bit = 8 - signal_len;
-        //             int8_t *tmp_value = (int8_t*)&buffer_[start_index + offset_bit/8];
-        //             int8_t value = *tmp_value >> left_bit;
-        //             std::cout << "(2)A_INT8: " << (int)value<< std::endl;
-        //             return value;
-        //         }
-        //         else
-        //         {
-        //             int16_t *tmp_value = (int16_t*)&buffer_[start_index + offset_bit/8];
-        //             int left_offset = offset_bit % 8;
-        //             int left_bit = 8 - signal_len;
-        //             int16_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htons(*tmp_value);
-        //             int8_t value = int16_t(tmp_v << left_offset) >> (8 + left_bit);
-        //             std::cout << "(3)A_INT8: " << (int16_t)value<< std::endl;
-        //             return value;
-        //         }
-        //         break;
-        //     case NativeType::A_UNSIGNED_SHORT:
-        //         if (offset_bit % 8 == 0 && signal_len == 16)
-        //         {
-        //             uint16_t *tmp_value = (uint16_t*)&buffer_[start_index + offset_bit/8];
-        //             uint16_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htons(*tmp_value);
-        //             uint16_t value = tmp_v;
-        //             std::cout << "(1)A_UINT16: " << value << std::endl;
-        //             return value;
-        //         }
-        //         else if (offset_bit % 8 == 0)
-        //         {
-        //             int left_bit = 16 - signal_len;
-        //             uint32_t *tmp_value = (uint32_t*)&buffer_[start_index + offset_bit/8];
-        //             uint32_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htonl(*tmp_value);
-        //             uint16_t value = tmp_v >> (16 + left_bit);
-        //             std::cout << "(2)A_UINT16: " << value << std::endl;
-        //             return value;            
-        //         }
-        //         else
-        //         {
-        //             uint32_t *tmp_value = (uint32_t*)&buffer_[start_index + offset_bit/8];
-        //             int left_offset = offset_bit % 8;
-        //             int left_bit = 16 - signal_len;
-        //             uint32_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htonl(*tmp_value);
-        //             uint16_t value = uint32_t(tmp_v << left_offset) >> (16 + left_bit);
-        //             std::cout << "(3)A_UINT16: " << value<< std::endl;
-        //             return value;
-        //         }
-        //         break;
-        //     case NativeType::A_SIGNED_SHORT:
-        //         if (offset_bit % 8 == 0 && signal_len == 16)
-        //         {
-        //             int16_t *tmp_value = (int16_t*)&buffer_[start_index + offset_bit/8];
-        //             int16_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htons(*tmp_value);
-        //             int16_t value = tmp_v;
-        //             std::cout << "(1)A_INT16: " << value << std::endl;
-        //             return value;
-        //         }
-        //         else if (offset_bit % 8 == 0)
-        //         {
-        //             int left_bit = 16 - signal_len;
-        //             int32_t *tmp_value = (int32_t*)&buffer_[start_index + offset_bit/8];
-        //             int32_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htonl(*tmp_value);
-        //             int16_t value = tmp_v >> (16 + left_bit);
-        //             std::cout << "(2)A_INT16: " << value << std::endl;
-        //             return value;            
-        //         }
-        //         else
-        //         {
-        //             int32_t *tmp_value = (int32_t*)&buffer_[start_index + offset_bit/8];
-        //             int left_offset = offset_bit % 8;
-        //             int left_bit = 16 - signal_len;
-        //             int32_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htonl(*tmp_value);
-        //             int16_t value = int32_t(tmp_v << left_offset) >> (16 + left_bit);
-        //             std::cout << "(3)A_INT16: " << value<< std::endl;
-        //             return value;
-        //         }
-        //         break;
-        //     case NativeType::A_UNSIGNED_LONG:
-        //         if (offset_bit % 8 == 0 && signal_len == 32)
-        //         {
-        //             uint32_t *tmp_value = (uint32_t*)&buffer_[start_index + offset_bit/8];
-        //             uint32_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htonl(*tmp_value);
-        //             uint32_t value = tmp_v;
-        //             std::cout << "(1)A_UINT32: " << value << std::endl;
-        //             return value;
-        //         }
-        //         else if (offset_bit % 8 == 0)
-        //         {
-        //             int left_bit = 32 - signal_len;
-        //             uint64_t *tmp_value = (uint64_t*)&buffer_[start_index + offset_bit/8];
-        //             uint64_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htonll(*tmp_value);
-        //             uint32_t value = tmp_v >> (32 + left_bit);
-        //             std::cout << "(2)A_UINT32: " << value << std::endl;
-        //             return value;              
-        //         }
-        //         else
-        //         {
-        //             uint64_t *tmp_value = (uint64_t*)&buffer_[start_index + offset_bit/8];
-        //             int left_offset = offset_bit % 8;
-        //             int left_bit = 32 - signal_len;
-        //             uint64_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htonll(*tmp_value);
-        //             uint32_t value = uint64_t(tmp_v << left_offset) >> (32 + left_bit);
-        //             std::cout << "(3)A_UINT32: " << value<< std::endl;
-        //             return value;
-        //         }   
-        //         break;
-        //     case NativeType::A_SIGNED_LONG:
-        //         if (offset_bit % 8 == 0 && signal_len == 32)
-        //         {
-        //             int32_t *tmp_value = (int32_t*)&buffer_[start_index + offset_bit/8];
-        //             int32_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htonl(*tmp_value);
-        //             int32_t value = tmp_v;
-        //             std::cout << "(1)A_INT32: " << value << std::endl;
-        //             return value;
-        //         }
-        //         else if (offset_bit % 8 == 0)
-        //         {
-        //             int left_bit = 32 - signal_len;
-        //             int64_t *tmp_value = (int64_t*)&buffer_[start_index + offset_bit/8];
-        //             int64_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htonll(*tmp_value);
-        //             int32_t value = tmp_v >> (32 + left_bit);
-        //             std::cout << "(2)A_INT32: " << value << std::endl;
-        //             return value;              
-        //         }
-        //         else
-        //         {
-        //             int64_t *tmp_value = (int64_t*)&buffer_[start_index + offset_bit/8];
-        //             int left_offset = offset_bit % 8;
-        //             int left_bit = 32 - signal_len;
-        //             int64_t tmp_v = *tmp_value;
-        //             if (order == PackingByteOrder::most_significant_byte_first)  tmp_v = htonll(*tmp_value);
-        //             int32_t value = int64_t(tmp_v << left_offset) >> (32 + left_bit);
-        //             std::cout << "(3)A_INT32: " << value<< std::endl;
-        //             return value;
-        //         }   
-        //         break;
-        //     default:
-        //         break;
-        //     }            
-        }
-
-        callUpdate(time);
-    }
 private:
     const int m_pdu_id_len{4};
     const int m_pdu_length_len{4};

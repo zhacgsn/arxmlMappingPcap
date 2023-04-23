@@ -1,5 +1,4 @@
 #include "tinyxml2.h"
-#include "PDUStruct.h"
 #include "ARXMLDocument.h"
 #include "DSFSignalTree/abstractnode.h"
 #include "DSFSignalTree/signaliterator.h"
@@ -116,20 +115,7 @@ bool dsf::ArxmlDocument::GenerateMap(const tinyxml2::XMLElement* element)
                 real_signal_name = real_signal_name.substr(pos);
                 // std::cout << "real signal名: " << real_signal_name << std::endl;
             }
-            if (count > pdu_name_count && tempElement->Name() == kSignal_byte_order_tagname)
-            {
-                std::string byte_order = tempElement->GetText();
-                if (byte_order == "MOST-SIGNIFICANT-BYTE-LAST")
-                {
-                    PackingByteOrder order = PackingByteOrder::most_significant_byte_last;
-                    signal_to_byte_order_map_.emplace(real_signal_name, order);
-                }
-                if (byte_order == "MOST-SIGNIFICANT-BYTE-FIRST")
-                {
-                    PackingByteOrder order = PackingByteOrder::most_significant_byte_first;
-                    signal_to_byte_order_map_.emplace(real_signal_name, order);
-                }
-            }
+
             // 映射标签名
             if (count > pdu_count && tempElement->Name() == kSignal_to_pdu_map_tagname)
             {
@@ -348,15 +334,7 @@ void dsf::ArxmlDocument::PrintBaseTypeToNativeMap() const
     }
 }
 
-// 打印 std::unordered_map<std::string, PackingByteOrder> signal_to_byte_order_map
-void dsf::ArxmlDocument::PrintSignalToByteOrderMap() const
-{
-    std::cout << "signal_to_byte_order_map: " << std::endl;
-    for (const auto &[signal, byte_order] : signal_to_byte_order_map_)
-    {
-        std::cout << "Signal " << signal << "'s PackingByteOrder is " << static_cast<int>(byte_order) << std::endl;
-    }
-}
+
 
 bool dsf::ArxmlDocument::load(const std::string &file)
 {
@@ -425,4 +403,227 @@ void dsf::ArxmlDocument::PrintSignalTree() const
             std::cout << "\tSignal Length: " << signal_node->max() << std::endl;
         }
     }
+}
+
+
+void dsf::ArxmlMessageRef::update(const char *buf, size_t len, const DSFTime& time)
+{
+    // 当前索引下标
+    int cur_idx = 0;
+
+    uint32_t *net_id;
+    net_id = (uint32_t *)&buf[cur_idx];
+    uint32_t id = htonl(*net_id);
+    cur_idx += m_pdu_id_len;
+
+    uint32_t *net_pdu_len;
+    net_pdu_len = (uint32_t *)&buf[cur_idx];
+    uint32_t pdu_len = htonl(*net_pdu_len);
+    cur_idx += m_pdu_length_len;
+    
+    // 找到pdu
+    std::string str_id = std::to_string(id);
+    std::cout << "The pdu id is " << str_id << std::endl;
+    SignalNode *pdu =  m_origin->at(str_id);
+
+    for (auto itr = pdu->begin(); itr != pdu->end(); ++itr) {
+        DataType t = dynamic_cast<SignalValue*>(itr.signal())->type();
+        std::cout << "The DataType is " << t << std::endl;
+        SignalValue *child_signal = dynamic_cast<SignalValue*>(itr.signal());
+
+        int offset_bit = static_cast<int>(child_signal->offset());
+        int signal_len = static_cast<int>(child_signal->max()); 
+        std::cout << "The offset_bit is" << offset_bit << " The signal_len is " << signal_len << std::endl;
+        switch (t)
+        {
+        case DSF_UINT8:
+            if (offset_bit % 8 == 0 && signal_len == 8)
+            {
+                uint8_t *tmp_value = (uint8_t*)&buf[cur_idx + offset_bit/8];
+                child_signal->data().setUint8(*tmp_value);
+                //uint8_t value = htonl(*tmp_value);
+                std::cout << "(1)A_UINT8: " << int(*tmp_value)<< std::endl;
+                //return *tmp_value;
+            }
+            else if (offset_bit % 8 == 0)
+            {
+                int left_bit = 8 - signal_len;
+                uint8_t *tmp_value = (uint8_t*)&buf[cur_idx + offset_bit/8];
+                uint8_t value = *tmp_value >> left_bit;
+                child_signal->data().setUint8(value);
+                std::cout << "(2)A_UINT8: " << (uint8_t)value<< std::endl;
+            }
+            else
+            {
+                uint16_t *tmp_value = (uint16_t*)&buf[cur_idx + offset_bit/8];
+                int left_offset = offset_bit % 8;
+                int left_bit = 8 - signal_len;
+                uint16_t tmp_v = *tmp_value;
+                tmp_v = htons(*tmp_value);
+                uint8_t value = uint16_t(tmp_v << left_offset) >> (8 + left_bit);
+                child_signal->data().setUint8(value);
+                std::cout << "(3)A_UINT8: " << (uint8_t)value<< std::endl;
+            }
+            break;
+        case DSF_INT8:
+            if (offset_bit % 8 == 0 && signal_len == 8)
+            {
+                int8_t *tmp_value = (int8_t*)&buf[cur_idx + offset_bit/8];
+                //uint8_t value = htonl(*tmp_value);
+                child_signal->data().setInt8(*tmp_value);
+                std::cout << "(1)A_INT8: " << int(*tmp_value)<< std::endl;
+            }
+            else if (offset_bit % 8 == 0)
+            {
+                int left_bit = 8 - signal_len;
+                int8_t *tmp_value = (int8_t*)&buf[cur_idx + offset_bit/8];
+                int8_t value = *tmp_value >> left_bit;
+                child_signal->data().setInt8(value);
+                std::cout << "(2)A_INT8: " << (int)value<< std::endl;
+            }
+            else
+            {
+                int16_t *tmp_value = (int16_t*)&buf[cur_idx + offset_bit/8];
+                int left_offset = offset_bit % 8;
+                int left_bit = 8 - signal_len;
+                int16_t tmp_v = *tmp_value;
+                tmp_v = htons(*tmp_value);
+                int8_t value = int16_t(tmp_v << left_offset) >> (8 + left_bit);
+                child_signal->data().setInt8(value);
+                std::cout << "(3)A_INT8: " << (int16_t)value<< std::endl;
+            }
+            break;
+        case DSF_UINT16:
+            if (offset_bit % 8 == 0 && signal_len == 16)
+            {
+                uint16_t *tmp_value = (uint16_t*)&buf[cur_idx + offset_bit/8];
+                uint16_t tmp_v = *tmp_value;
+                tmp_v = htons(*tmp_value);
+                uint16_t value = tmp_v;
+                child_signal->data().setUint16(value);
+                std::cout << "(1)A_UINT16: " << value << std::endl;
+            }
+            else if (offset_bit % 8 == 0)
+            {
+                int left_bit = 16 - signal_len;
+                uint32_t *tmp_value = (uint32_t*)&buf[cur_idx + offset_bit/8];
+                uint32_t tmp_v = *tmp_value;
+                tmp_v = htonl(*tmp_value);
+                uint16_t value = tmp_v >> (16 + left_bit);
+                child_signal->data().setUint16(value);
+                std::cout << "(2)A_UINT16: " << value << std::endl;         
+            }
+            else
+            {
+                uint32_t *tmp_value = (uint32_t*)&buf[cur_idx + offset_bit/8];
+                int left_offset = offset_bit % 8;
+                int left_bit = 16 - signal_len;
+                uint32_t tmp_v = *tmp_value;
+                tmp_v = htonl(*tmp_value);
+                uint16_t value = uint32_t(tmp_v << left_offset) >> (16 + left_bit);
+                child_signal->data().setUint16(value);
+                std::cout << "(3)A_UINT16: " << value<< std::endl;
+            }
+            break;
+        case DSF_INT16:
+            if (offset_bit % 8 == 0 && signal_len == 16)
+            {
+                int16_t *tmp_value = (int16_t*)&buf[cur_idx + offset_bit/8];
+                int16_t tmp_v = *tmp_value;
+                tmp_v = htons(*tmp_value);
+                int16_t value = tmp_v;
+                child_signal->data().setInt16(value);
+                std::cout << "(1)A_INT16: " << value << std::endl;
+            }
+            else if (offset_bit % 8 == 0)
+            {
+                int left_bit = 16 - signal_len;
+                int32_t *tmp_value = (int32_t*)&buf[cur_idx + offset_bit/8];
+                int32_t tmp_v = *tmp_value;
+                tmp_v = htonl(*tmp_value);
+                int16_t value = tmp_v >> (16 + left_bit);
+                child_signal->data().setInt16(value);
+                std::cout << "(2)A_INT16: " << value << std::endl;          
+            }
+            else
+            {
+                int32_t *tmp_value = (int32_t*)&buf[cur_idx + offset_bit/8];
+                int left_offset = offset_bit % 8;
+                int left_bit = 16 - signal_len;
+                int32_t tmp_v = *tmp_value;
+                tmp_v = htonl(*tmp_value);
+                int16_t value = int32_t(tmp_v << left_offset) >> (16 + left_bit);
+                child_signal->data().setInt16(value); 
+                std::cout << "(3)A_INT16: " << value<< std::endl;
+            }
+            break;
+        case DSF_UINT32:
+            if (offset_bit % 8 == 0 && signal_len == 32)
+            {
+                uint32_t *tmp_value = (uint32_t*)&buf[cur_idx + offset_bit/8];
+                uint32_t tmp_v = *tmp_value;
+                tmp_v = htonl(*tmp_value);
+                uint32_t value = tmp_v;
+                child_signal->data().setUint32(value);
+                std::cout << "(1)A_UINT32: " << value << std::endl;
+            }
+            else if (offset_bit % 8 == 0)
+            {
+                int left_bit = 32 - signal_len;
+                uint64_t *tmp_value = (uint64_t*)&buf[cur_idx + offset_bit/8];
+                uint64_t tmp_v = *tmp_value;
+                tmp_v = htonll(*tmp_value);
+                uint32_t value = tmp_v >> (32 + left_bit);
+                child_signal->data().setUint32(value);
+                std::cout << "(2)A_UINT32: " << value << std::endl;           
+            }
+            else
+            {
+                uint64_t *tmp_value = (uint64_t*)&buf[cur_idx + offset_bit/8];
+                int left_offset = offset_bit % 8;
+                int left_bit = 32 - signal_len;
+                uint64_t tmp_v = *tmp_value;
+                tmp_v = htonll(*tmp_value);
+                uint32_t value = uint64_t(tmp_v << left_offset) >> (32 + left_bit);
+                child_signal->data().setUint32(value);
+                std::cout << "(3)A_UINT32: " << value<< std::endl;
+            }   
+            break;
+        case DSF_INT32:
+            if (offset_bit % 8 == 0 && signal_len == 32)
+            {
+                int32_t *tmp_value = (int32_t*)&buf[cur_idx + offset_bit/8];
+                int32_t tmp_v = *tmp_value;
+                tmp_v = htonl(*tmp_value);
+                int32_t value = tmp_v;
+                child_signal->data().setInt32(value);
+                std::cout << "(1)A_INT32: " << value << std::endl;
+            }
+            else if (offset_bit % 8 == 0)
+            {
+                int left_bit = 32 - signal_len;
+                int64_t *tmp_value = (int64_t*)&buf[cur_idx + offset_bit/8];
+                int64_t tmp_v = *tmp_value;
+                tmp_v = htonll(*tmp_value);
+                int32_t value = tmp_v >> (32 + left_bit);
+                child_signal->data().setInt32(value);
+                std::cout << "(2)A_INT32: " << value << std::endl;            
+            }
+            else
+            {
+                int64_t *tmp_value = (int64_t*)&buf[cur_idx + offset_bit/8];
+                int left_offset = offset_bit % 8;
+                int left_bit = 32 - signal_len;
+                int64_t tmp_v = *tmp_value;
+                tmp_v = htonll(*tmp_value);
+                int32_t value = int64_t(tmp_v << left_offset) >> (32 + left_bit);
+                child_signal->data().setInt32(value); 
+                std::cout << "(3)A_INT32: " << value<< std::endl;
+            }   
+            break;
+        default:
+            break;
+        }            
+    }
+    callUpdate(time);
 }
